@@ -53955,6 +53955,186 @@ $$;
 
 ALTER FUNCTION public.repventasnetasproductofactura(tipo_reporte integer, cliente character varying, producto character varying, fecha_inicial character varying, fecha_final character varying, empresa_id integer, id_linea integer, id_marca integer, id_familia integer, id_subfamilia integer, tipo_costo integer, id_agente integer) OWNER TO us_kupsa;
 
+--
+-- Name: repventasnetasproductofactura(integer, character varying, character varying, character varying, character varying, integer, integer, integer, integer, integer, integer, integer, integer, integer); Type: FUNCTION; Schema: public; Owner: us_kupsa
+--
+
+CREATE FUNCTION repventasnetasproductofactura(tipo_reporte integer, cliente character varying, producto character varying, fecha_inicial character varying, fecha_final character varying, empresa_id integer, id_linea integer, id_marca integer, id_familia integer, id_subfamilia integer, tipo_costo integer, id_agente integer, id_segmento integer, id_mercado integer) RETURNS SETOF record
+    LANGUAGE plpgsql
+    AS $$
+
+DECLARE
+	cadena_sql text = '';
+	cadena_where text ='';
+	cadena_tipo_costo text ='';
+	ordenado_por text ='';
+	modo_ordenacion text ='';
+	
+	fila record;
+
+BEGIN
+	cadena_where:='';
+	--'||cadena_where||'
+	IF  tipo_reporte = 1 THEN   --clientes
+		--ordenado_por='cxc_clie.numero_control,fac_docs.momento_creacion ';
+		ordenado_por='cxc_clie.razon_social asc ,moneda asc ,fac_docs.momento_creacion asc , inv_prod.sku,inv_prod_presentaciones.id';
+		modo_ordenacion='asc';
+	END IF;
+	
+	IF tipo_reporte = 2 THEN    --productos   select * from inv_prod
+		ordenado_por='inv_prod.sku,moneda,unidad';
+		modo_ordenacion='asc';
+	END IF;
+
+	IF tipo_reporte = 3 THEN   --  +producto
+		ordenado_por='producto,cantidad';
+		--modo_ordenacion='desc';
+		modo_ordenacion='desc';
+	END IF;
+
+	IF tipo_reporte = 4 THEN    --- +cliete
+		ordenado_por='razon_social,cantidad';
+		--modo_ordenacion='desc';
+		modo_ordenacion='desc';
+	END IF;
+	
+	IF trim(cliente) <> '%%' THEN
+		cadena_where:= cadena_where ||' AND cxc_clie.razon_social ilike '''||replace(cliente, '%%', '%')||'''';
+	END IF;
+
+	if trim(producto) <> '%%' THEN
+		cadena_where:= cadena_where ||' AND inv_prod.descripcion ilike '''||producto||'''';
+	END IF;
+	
+	if id_linea > 0 THEN
+		cadena_where:= cadena_where ||' AND inv_prod.inv_prod_linea_id='||id_linea||'';
+	END IF;
+	
+	if id_marca > 0 THEN
+		cadena_where:= cadena_where ||' AND inv_prod.inv_mar_id='||id_marca||'';
+	END IF;
+	
+	if id_familia > 0 THEN
+		cadena_where:= cadena_where ||' AND inv_prod.inv_prod_familia_id='||id_familia||'';
+	END IF;
+	
+	if id_subfamilia > 0 THEN
+		cadena_where:= cadena_where ||' AND inv_prod.subfamilia_id='||id_subfamilia||'';
+	END IF;
+	
+	if id_agente > 0 THEN
+		cadena_where:= cadena_where ||' AND fac_docs.cxc_agen_id='||id_agente||'';
+	END IF;
+
+	if id_segmento > 0 THEN
+		cadena_where:= cadena_where ||' AND cxc_clie.clasif_1='||id_segmento||'';
+	END IF;
+
+	if id_mercado > 0 THEN
+		cadena_where:= cadena_where ||' AND cxc_clie.clasif_2='||id_mercado||'';
+	END IF;
+	
+	if tipo_costo = 1 THEN
+	----toma el mes de la fecha de la factura
+	--incrementa := EXTRACT(MONTH FROM str_data[7]::timestamp with time zone)::integer
+		--cadena_tipo_costo:= '(CASE WHEN fac_docs.moneda_id=1  THEN fac_docs_detalles.costo_promedio * fac_docs_detalles.cantidad
+	        --                     ELSE fac_docs_detalles.costo_promedio  * fac_docs.tipo_cambio  * fac_docs_detalles.cantidad END) AS costo,';
+		cadena_tipo_costo:= '(fac_docs_detalles.costo_promedio * fac_docs_detalles.cantidad ) AS costo,';
+	END IF;
+	if tipo_costo = 2 THEN
+		cadena_tipo_costo:= '
+		(CASE 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=1 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_1 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_1=1 THEN inv_prod_cost_prom.costo_ultimo_1 ELSE inv_prod_cost_prom.costo_ultimo_1 * (case when inv_prod_cost_prom.tipo_cambio_1=0 then 1 else inv_prod_cost_prom.tipo_cambio_1 end) END) + (CASE WHEN inv_prod_costos.costo_adic_1 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_1=1 THEN inv_prod_costos.costo_adic_1 ELSE inv_prod_costos.costo_adic_1 * (case when inv_prod_cost_prom.tipo_cambio_1=0 then 1 else inv_prod_cost_prom.tipo_cambio_1 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_1=1 THEN inv_prod_cost_prom.costo_ultimo_1 ELSE inv_prod_cost_prom.costo_ultimo_1 * (case when inv_prod_cost_prom.tipo_cambio_1=0 then 1 else inv_prod_cost_prom.tipo_cambio_1 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_1 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_1 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_1=1 THEN inv_prod_cost_prom.costo_ultimo_1 ELSE inv_prod_cost_prom.costo_ultimo_1 * (case when inv_prod_cost_prom.tipo_cambio_1=0 then 1 else inv_prod_cost_prom.tipo_cambio_1 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_1 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_1 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=2 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_2 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_2=1 THEN inv_prod_cost_prom.costo_ultimo_2 ELSE inv_prod_cost_prom.costo_ultimo_2 * (case when inv_prod_cost_prom.tipo_cambio_2=0 then 1 else inv_prod_cost_prom.tipo_cambio_2 end) END) + (CASE WHEN inv_prod_costos.costo_adic_2 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_2=1 THEN inv_prod_costos.costo_adic_2 ELSE inv_prod_costos.costo_adic_2 * (case when inv_prod_cost_prom.tipo_cambio_2=0 then 1 else inv_prod_cost_prom.tipo_cambio_2 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_2=1 THEN inv_prod_cost_prom.costo_ultimo_2 ELSE inv_prod_cost_prom.costo_ultimo_2 * (case when inv_prod_cost_prom.tipo_cambio_2=0 then 1 else inv_prod_cost_prom.tipo_cambio_2 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_2 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_2 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_2=1 THEN inv_prod_cost_prom.costo_ultimo_2 ELSE inv_prod_cost_prom.costo_ultimo_2 * (case when inv_prod_cost_prom.tipo_cambio_2=0 then 1 else inv_prod_cost_prom.tipo_cambio_2 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_2 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_2 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=3 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_3 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_3=1 THEN inv_prod_cost_prom.costo_ultimo_3 ELSE inv_prod_cost_prom.costo_ultimo_3 * (case when inv_prod_cost_prom.tipo_cambio_3=0 then 1 else inv_prod_cost_prom.tipo_cambio_3 end) END) + (CASE WHEN inv_prod_costos.costo_adic_3 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_3=1 THEN inv_prod_costos.costo_adic_3 ELSE inv_prod_costos.costo_adic_3 * (case when inv_prod_cost_prom.tipo_cambio_3=0 then 1 else inv_prod_cost_prom.tipo_cambio_3 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_3=1 THEN inv_prod_cost_prom.costo_ultimo_3 ELSE inv_prod_cost_prom.costo_ultimo_3 * (case when inv_prod_cost_prom.tipo_cambio_3=0 then 1 else inv_prod_cost_prom.tipo_cambio_3 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_3 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_3 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_3=1 THEN inv_prod_cost_prom.costo_ultimo_3 ELSE inv_prod_cost_prom.costo_ultimo_3 * (case when inv_prod_cost_prom.tipo_cambio_3=0 then 1 else inv_prod_cost_prom.tipo_cambio_3 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_3 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_3 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=4 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_4 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_4=1 THEN inv_prod_cost_prom.costo_ultimo_4 ELSE inv_prod_cost_prom.costo_ultimo_4 * (case when inv_prod_cost_prom.tipo_cambio_4=0 then 1 else inv_prod_cost_prom.tipo_cambio_4 end) END) + (CASE WHEN inv_prod_costos.costo_adic_4 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_4=1 THEN inv_prod_costos.costo_adic_4 ELSE inv_prod_costos.costo_adic_4 * (case when inv_prod_cost_prom.tipo_cambio_4=0 then 1 else inv_prod_cost_prom.tipo_cambio_4 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_4=1 THEN inv_prod_cost_prom.costo_ultimo_4 ELSE inv_prod_cost_prom.costo_ultimo_4 * (case when inv_prod_cost_prom.tipo_cambio_4=0 then 1 else inv_prod_cost_prom.tipo_cambio_4 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_4 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_4 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_4=1 THEN inv_prod_cost_prom.costo_ultimo_4 ELSE inv_prod_cost_prom.costo_ultimo_4 * (case when inv_prod_cost_prom.tipo_cambio_4=0 then 1 else inv_prod_cost_prom.tipo_cambio_4 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_4 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_4 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=5 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_5 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_5=1 THEN inv_prod_cost_prom.costo_ultimo_5 ELSE inv_prod_cost_prom.costo_ultimo_5 * (case when inv_prod_cost_prom.tipo_cambio_5=0 then 1 else inv_prod_cost_prom.tipo_cambio_5 end) END) + (CASE WHEN inv_prod_costos.costo_adic_5 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_5=1 THEN inv_prod_costos.costo_adic_5 ELSE inv_prod_costos.costo_adic_5 * (case when inv_prod_cost_prom.tipo_cambio_5=0 then 1 else inv_prod_cost_prom.tipo_cambio_5 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_5=1 THEN inv_prod_cost_prom.costo_ultimo_5 ELSE inv_prod_cost_prom.costo_ultimo_5 * (case when inv_prod_cost_prom.tipo_cambio_5=0 then 1 else inv_prod_cost_prom.tipo_cambio_5 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_5 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_5 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_5=1 THEN inv_prod_cost_prom.costo_ultimo_5 ELSE inv_prod_cost_prom.costo_ultimo_5 * (case when inv_prod_cost_prom.tipo_cambio_5=0 then 1 else inv_prod_cost_prom.tipo_cambio_5 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_5 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_5 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=6 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_6 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_6=1 THEN inv_prod_cost_prom.costo_ultimo_6 ELSE inv_prod_cost_prom.costo_ultimo_6 * (case when inv_prod_cost_prom.tipo_cambio_6=0 then 1 else inv_prod_cost_prom.tipo_cambio_6 end) END) + (CASE WHEN inv_prod_costos.costo_adic_6 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_6=1 THEN inv_prod_costos.costo_adic_6 ELSE inv_prod_costos.costo_adic_6 * (case when inv_prod_cost_prom.tipo_cambio_6=0 then 1 else inv_prod_cost_prom.tipo_cambio_6 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_6=1 THEN inv_prod_cost_prom.costo_ultimo_6 ELSE inv_prod_cost_prom.costo_ultimo_6 * (case when inv_prod_cost_prom.tipo_cambio_6=0 then 1 else inv_prod_cost_prom.tipo_cambio_6 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_6 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_6 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_6=1 THEN inv_prod_cost_prom.costo_ultimo_6 ELSE inv_prod_cost_prom.costo_ultimo_6 * (case when inv_prod_cost_prom.tipo_cambio_6=0 then 1 else inv_prod_cost_prom.tipo_cambio_6 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_6 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_6 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=7 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_7 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_7=1 THEN inv_prod_cost_prom.costo_ultimo_7 ELSE inv_prod_cost_prom.costo_ultimo_7 * (case when inv_prod_cost_prom.tipo_cambio_7=0 then 1 else inv_prod_cost_prom.tipo_cambio_7 end) END) + (CASE WHEN inv_prod_costos.costo_adic_7 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_7=1 THEN inv_prod_costos.costo_adic_7 ELSE inv_prod_costos.costo_adic_7 * (case when inv_prod_cost_prom.tipo_cambio_7=0 then 1 else inv_prod_cost_prom.tipo_cambio_7 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_7=1 THEN inv_prod_cost_prom.costo_ultimo_7 ELSE inv_prod_cost_prom.costo_ultimo_7 * (case when inv_prod_cost_prom.tipo_cambio_7=0 then 1 else inv_prod_cost_prom.tipo_cambio_7 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_7 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_7 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_7=1 THEN inv_prod_cost_prom.costo_ultimo_7 ELSE inv_prod_cost_prom.costo_ultimo_7 * (case when inv_prod_cost_prom.tipo_cambio_7=0 then 1 else inv_prod_cost_prom.tipo_cambio_7 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_7 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_7 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=8 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_8 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_8=1 THEN inv_prod_cost_prom.costo_ultimo_8 ELSE inv_prod_cost_prom.costo_ultimo_8 * (case when inv_prod_cost_prom.tipo_cambio_8=0 then 1 else inv_prod_cost_prom.tipo_cambio_8 end) END) + (CASE WHEN inv_prod_costos.costo_adic_8 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_8=1 THEN inv_prod_costos.costo_adic_8 ELSE inv_prod_costos.costo_adic_8 * (case when inv_prod_cost_prom.tipo_cambio_8=0 then 1 else inv_prod_cost_prom.tipo_cambio_8 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_8=1 THEN inv_prod_cost_prom.costo_ultimo_8 ELSE inv_prod_cost_prom.costo_ultimo_8 * (case when inv_prod_cost_prom.tipo_cambio_8=0 then 1 else inv_prod_cost_prom.tipo_cambio_8 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_8 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_8 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_8=1 THEN inv_prod_cost_prom.costo_ultimo_8 ELSE inv_prod_cost_prom.costo_ultimo_8 * (case when inv_prod_cost_prom.tipo_cambio_8=0 then 1 else inv_prod_cost_prom.tipo_cambio_8 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_8 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_8 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=9 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_9 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_9=1 THEN inv_prod_cost_prom.costo_ultimo_9 ELSE inv_prod_cost_prom.costo_ultimo_9 * (case when inv_prod_cost_prom.tipo_cambio_9=0 then 1 else inv_prod_cost_prom.tipo_cambio_9 end) END) + (CASE WHEN inv_prod_costos.costo_adic_9 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_9=1 THEN inv_prod_costos.costo_adic_9 ELSE inv_prod_costos.costo_adic_9 * (case when inv_prod_cost_prom.tipo_cambio_9=0 then 1 else inv_prod_cost_prom.tipo_cambio_9 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_9=1 THEN inv_prod_cost_prom.costo_ultimo_9 ELSE inv_prod_cost_prom.costo_ultimo_9 * (case when inv_prod_cost_prom.tipo_cambio_9=0 then 1 else inv_prod_cost_prom.tipo_cambio_9 end) END) *  ((CASE WHEN inv_prod_costos.costo_imp_9 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_9 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_9=1 THEN inv_prod_cost_prom.costo_ultimo_9 ELSE inv_prod_cost_prom.costo_ultimo_9 * (case when inv_prod_cost_prom.tipo_cambio_9=0 then 1 else inv_prod_cost_prom.tipo_cambio_9 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_9 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_9 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=10 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_10 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_10=1 THEN inv_prod_cost_prom.costo_ultimo_10 ELSE inv_prod_cost_prom.costo_ultimo_10 * (case when inv_prod_cost_prom.tipo_cambio_10=0 then 1 else inv_prod_cost_prom.tipo_cambio_10 end) END) + (CASE WHEN inv_prod_costos.costo_adic_10 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_10=1 THEN inv_prod_costos.costo_adic_10 ELSE inv_prod_costos.costo_adic_10 * (case when inv_prod_cost_prom.tipo_cambio_10=0 then 1 else inv_prod_cost_prom.tipo_cambio_10 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_10=1 THEN inv_prod_cost_prom.costo_ultimo_10 ELSE inv_prod_cost_prom.costo_ultimo_10 * (case when inv_prod_cost_prom.tipo_cambio_10=0 then 1 else inv_prod_cost_prom.tipo_cambio_10 end) END) * ((CASE WHEN inv_prod_costos.costo_imp_10 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_10 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_10=1 THEN inv_prod_cost_prom.costo_ultimo_10 ELSE inv_prod_cost_prom.costo_ultimo_10 * (case when inv_prod_cost_prom.tipo_cambio_10=0 then 1 else inv_prod_cost_prom.tipo_cambio_10 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_10 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_10 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=11 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_11 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_11=1 THEN inv_prod_cost_prom.costo_ultimo_11 ELSE inv_prod_cost_prom.costo_ultimo_11 * (case when inv_prod_cost_prom.tipo_cambio_11=0 then 1 else inv_prod_cost_prom.tipo_cambio_11 end) END) + (CASE WHEN inv_prod_costos.costo_adic_11 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_11=1 THEN inv_prod_costos.costo_adic_11 ELSE inv_prod_costos.costo_adic_11 * (case when inv_prod_cost_prom.tipo_cambio_11=0 then 1 else inv_prod_cost_prom.tipo_cambio_11 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_11=1 THEN inv_prod_cost_prom.costo_ultimo_11 ELSE inv_prod_cost_prom.costo_ultimo_11 * (case when inv_prod_cost_prom.tipo_cambio_11=0 then 1 else inv_prod_cost_prom.tipo_cambio_11 end) END) * ((CASE WHEN inv_prod_costos.costo_imp_11 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_11 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_11=1 THEN inv_prod_cost_prom.costo_ultimo_11 ELSE inv_prod_cost_prom.costo_ultimo_11 * (case when inv_prod_cost_prom.tipo_cambio_11=0 then 1 else inv_prod_cost_prom.tipo_cambio_11 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_11 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_11 END) /100))) END) 
+			WHEN EXTRACT(MONTH FROM fac_docs.momento_creacion)::integer=12 THEN (CASE WHEN inv_prod_cost_prom.costo_ultimo_12 IS NULL THEN 0 ELSE ((CASE WHEN inv_prod_cost_prom.gral_mon_id_12=1 THEN inv_prod_cost_prom.costo_ultimo_12 ELSE inv_prod_cost_prom.costo_ultimo_12 * (case when inv_prod_cost_prom.tipo_cambio_12=0 then 1 else inv_prod_cost_prom.tipo_cambio_12 end) END) + (CASE WHEN inv_prod_costos.costo_adic_12 IS NULL THEN 0 ELSE (CASE WHEN inv_prod_cost_prom.gral_mon_id_12=1 THEN inv_prod_costos.costo_adic_12 ELSE inv_prod_costos.costo_adic_12 * (case when inv_prod_cost_prom.tipo_cambio_12=0 then 1 else inv_prod_cost_prom.tipo_cambio_12 end) END) END) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_12=1 THEN inv_prod_cost_prom.costo_ultimo_12 ELSE inv_prod_cost_prom.costo_ultimo_12 * (case when inv_prod_cost_prom.tipo_cambio_12=0 then 1 else inv_prod_cost_prom.tipo_cambio_12 end) END) * ((CASE WHEN inv_prod_costos.costo_imp_12 IS NULL THEN 0 ELSE inv_prod_costos.costo_imp_12 END) /100)) + ((CASE WHEN inv_prod_cost_prom.gral_mon_id_12=1 THEN inv_prod_cost_prom.costo_ultimo_12 ELSE inv_prod_cost_prom.costo_ultimo_12 * (case when inv_prod_cost_prom.tipo_cambio_12=0 then 1 else inv_prod_cost_prom.tipo_cambio_12 end) END) *  ((CASE WHEN inv_prod_costos.costo_dir_12 IS NULL THEN 0 ELSE inv_prod_costos.costo_dir_12 END) /100))) END) 
+		ELSE 0 END)  * fac_docs_detalles.cantidad  AS costo,';
+	END IF;
+	
+	--update inv_prod_cost_prom set costo_ultimo_1=100 
+	--update inv_prod_costos set costo_imp_1=10 ,costo_dir_1=10
+	
+	cadena_sql:= '
+			SELECT  DISTINCT
+				cxc_clie.numero_control,
+				cxc_clie.razon_social,  
+				inv_prod.sku AS codigo,  
+				inv_prod.descripcion AS producto,  
+				fac_docs.serie_folio AS factura,  
+				inv_prod_unidades.titulo_abr AS unidad, 
+				fac_docs_detalles.cantidad,  
+				fac_docs_detalles.precio_unitario,  
+				(case when fac_docs.moneda_id = 1 then ''MN'' else ''USD''  end) AS moneda,  
+				fac_docs.tipo_cambio AS tipo_cambio,  
+				(CASE WHEN fac_docs.moneda_id=1  THEN fac_docs_detalles.precio_unitario * fac_docs_detalles.cantidad
+				ELSE (fac_docs_detalles.precio_unitario * fac_docs_detalles.cantidad) * fac_docs.tipo_cambio END) AS venta_pesos,
+				
+				'||cadena_tipo_costo||'
+				
+				to_char(fac_docs.momento_creacion,''dd/mm/yyyy'') as fecha_factura,
+				fac_docs.momento_creacion,
+				
+				inv_prod_presentaciones.id as id_presentacion,
+				inv_prod_presentaciones.titulo as presentacion
+
+			FROM fac_docs_detalles
+			JOIN fac_docs ON fac_docs.id = fac_docs_detalles.fac_doc_id
+			JOIN inv_prod ON inv_prod.id= fac_docs_detalles.inv_prod_id  
+			JOIN inv_prod_unidades on inv_prod_unidades.id=fac_docs_detalles.inv_prod_unidad_id  
+			JOIN inv_prod_presentaciones ON inv_prod_presentaciones.id = fac_docs_detalles.inv_prod_presentacion_id 
+			LEFT JOIN inv_prod_costos ON (inv_prod_costos.inv_prod_id=fac_docs_detalles.inv_prod_id  AND inv_prod_costos.inv_prod_presentacion_id=fac_docs_detalles.inv_prod_presentacion_id AND inv_prod_costos.ano=EXTRACT(YEAR FROM fac_docs.momento_creacion)::integer )
+			LEFT JOIN inv_prod_cost_prom ON (inv_prod_cost_prom.inv_prod_id = inv_prod.id AND inv_prod_cost_prom.ano=EXTRACT(YEAR FROM fac_docs.momento_creacion)::integer)
+			JOIN cxc_clie ON cxc_clie.id = fac_docs.cxc_clie_id
+			JOIN erp_proceso on erp_proceso.id= fac_docs.proceso_id 
+			WHERE fac_docs.cancelado=false  and  tipo_cambio !=0 
+			'||cadena_where||'   
+			AND erp_proceso.empresa_id = '||empresa_id ||'
+			AND to_char(fac_docs.momento_creacion,''yyyymmdd'')::integer between to_char('''||fecha_inicial||'''::timestamp with time zone,''yyyymmdd'')::integer AND to_char('''||fecha_final||'''::timestamp with time zone,''yyyymmdd'')::integer
+			order by '||ordenado_por||' '||modo_ordenacion||'';
+			
+		--RAISE EXCEPTION '%',cadena_sql;
+		
+		FOR fila IN EXECUTE (cadena_sql) LOOP
+			RETURN NEXT fila;
+		END LOOP;
+
+
+	/*
+	select * from repventasnetasproductofactura(2,'','','2012-10-01','2012-12-31',1,0,0,0,0,1,5,0,0) as foo(
+	numero_control character varying,         
+	razon_social character varying, 
+	codigo character varying, 
+	producto character varying, 
+	factura character varying , 
+	unidad character varying , 
+	cantidad double precision, 
+	precio_unitario double precision, 
+	moneda text, 
+	tipo_cambio double precision,  
+	venta_pesos double precision,  
+	costo double precision,  
+	fecha_factura text,
+	id_presentacion Integer,
+	presentacion character varying
+	); 
+
+	*/
+
+END;
+
+$$;
+
+
+ALTER FUNCTION public.repventasnetasproductofactura(tipo_reporte integer, cliente character varying, producto character varying, fecha_inicial character varying, fecha_final character varying, empresa_id integer, id_linea integer, id_marca integer, id_familia integer, id_subfamilia integer, tipo_costo integer, id_agente integer, id_segmento integer, id_mercado integer) OWNER TO us_kupsa;
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
