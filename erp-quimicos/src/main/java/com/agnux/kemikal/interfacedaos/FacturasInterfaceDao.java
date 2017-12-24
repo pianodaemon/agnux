@@ -14,6 +14,7 @@ import java.util.LinkedHashMap;
  */
 public interface FacturasInterfaceDao {
     public int countAll(String data_string);
+    public String q_serie_folio(final Integer usr_id);
     public String selectFunctionForFacAdmProcesos(String campos_data, String extra_data_array);
     public HashMap<String, String> selectFunctionValidateAaplicativo(String data, Integer idApp, String extra_data_array);
     public HashMap<String,String> getFac_Parametros(Integer id_emp, Integer id_suc);
