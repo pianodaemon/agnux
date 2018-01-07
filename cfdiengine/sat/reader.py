@@ -42,6 +42,7 @@ class SaxReader(xml.sax.ContentHandler):
             'CFDI_SAVE': None,
             'CFDI_TOTAL': None,
             'FORMA_PAGO': None,
+            'METODO_PAGO': None,
             'ARTIFACTS': [],
             'TAXES': {
                 'RET': {
@@ -95,6 +96,8 @@ class SaxReader(xml.sax.ContentHandler):
                     self.__ds['INCEPTOR_CP'] = v
                 if k == "FormaPago":
                     self.__ds['FORMA_PAGO'] = v
+                if k == "MetodoPago":
+                    self.__ds['METODO_PAGO'] = v
 
         if name == "cfdi:Concepto":
             c = {}
