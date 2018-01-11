@@ -23,7 +23,6 @@ import com.agnux.kemikal.interfacedaos.PrefacturasInterfaceDao;
 import com.agnux.tcp.BbgumProxy;
 import com.agnux.tcp.BbgumProxyError;
 import com.maxima.bbgum.ServerReply;
-import com.agnux.kemikal.reportes.pdfCfd_CfdiTimbrado;
 import com.agnux.kemikal.reportes.pdfCfd_CfdiTimbradoFormato2;
 import java.io.BufferedInputStream;
 import java.io.File;
