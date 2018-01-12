@@ -9,7 +9,6 @@ import com.agnux.cfd.v2.BeanFacturador;
 import com.agnux.cfdi.BeanCancelaCfdi;
 import com.agnux.cfdi.BeanFacturadorCfdi;
 import com.agnux.cfdi.BeanFromCfdiXml;
-import com.agnux.cfdi.adendas.AdendaCliente;
 import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.obj.DataPost;
@@ -38,11 +37,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 25/julio/2012
- */
 @Controller
 @SessionAttributes({"user"})
 @RequestMapping("/notascredito/")
@@ -728,8 +722,8 @@ public class NotasCreditoController {
                                             dataAdenda = this.getFacdao().getDatosAdenda(tipoDocAdenda, Integer.parseInt(dataCliente.get("adenda_id")), dataCliente, id_nota_credito, serieFolio, id_empresa);
                                             
                                             //INICIA EJECUCION DE CLASE QUE AGREGA LA ADENDA
-                                            AdendaCliente adenda = new AdendaCliente();
-                                            adenda.createAdenda(numAdenda, dataAdenda, path_file, xml_file_name);
+                                            //AdendaCliente adenda = new AdendaCliente();
+                                            //adenda.createAdenda(numAdenda, dataAdenda, path_file, xml_file_name);
                                             //TERMINA EJECUCION DE CLASE QUE AGREGA LA ADENDA
                                             
                                             File file_xml_con_adenda = new File(path_file+"/"+xml_file_name);
