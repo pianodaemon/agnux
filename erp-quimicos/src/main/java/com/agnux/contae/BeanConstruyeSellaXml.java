@@ -58,9 +58,9 @@ public class BeanConstruyeSellaXml {
             String cadenaXml = new String();
             
             //Obtener el certificado en cadena base64
-            String certificadoBase64 = CryptoEngine.encodeCertToBase64(rutaFicheroCertificado);
+            //String certificadoBase64 = CryptoEngine.encodeCertToBase64(rutaFicheroCertificado);
             
-            datos.put("certificado", certificadoBase64);
+            //datos.put("certificado", certificadoBase64);
             datos.put("sello", "@SELLO_DIGITAL");
             
             

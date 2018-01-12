@@ -345,7 +345,7 @@ public final class BeanFacturador {
         
         //Datos Base del CFD ------- INICIO -----------------------------------
         
-        this.setCertificado(CryptoEngine.encodeCertToBase64(this.getGralDao().getSslDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa)+ "/" + this.getGralDao().getCertificadoEmpresaEmisora(id_empresa, id_sucursal)));
+        //this.setCertificado(CryptoEngine.encodeCertToBase64(this.getGralDao().getSslDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa)+ "/" + this.getGralDao().getCertificadoEmpresaEmisora(id_empresa, id_sucursal)));
         
         this.setFecha(data.get("comprobante_attr_fecha"));
         
