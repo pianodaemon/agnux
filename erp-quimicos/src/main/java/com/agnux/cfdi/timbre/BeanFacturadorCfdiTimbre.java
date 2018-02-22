@@ -209,7 +209,7 @@ public class BeanFacturadorCfdiTimbre {
         
         //Datos Base del CFD ------- INICIO -----------------------------------
         
-        this.setCertificado(CryptoEngine.encodeCertToBase64(ruta_fichero_certificado));
+        //this.setCertificado(CryptoEngine.encodeCertToBase64(ruta_fichero_certificado));
         this.setNoCertificado(this.getGralDao().getNoCertificadoEmpresaEmisora(this.getId_empresa(), this.getId_sucursal()));
         this.setFecha(data.get("comprobante_attr_fecha"));
         
