@@ -6,6 +6,7 @@ package com.agnux.kemikal.springdaos;
 
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.common.helpers.StringHelper;
+import com.agnux.kemikal.controllers.PotCatCusorder;
 import com.agnux.kemikal.interfacedaos.PocInterfaceDao;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +31,36 @@ public class PocSpringDao implements PocInterfaceDao{
 
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
+    }
+    
+    @Override
+    public HashMap<String, String> poc_val_cusorder(Integer usr_id, String curr_val, String date_lim, Integer pay_met, String account, String matrix)
+    {
+        String sql_to_query = "select poc_val_cusorder from poc_val_cusorder(" + usr_id + ",'" + curr_val + "','" + date_lim  + "'," + pay_met  + ",'" + account + "',array["+matrix+"]);";
+        System.out.println("Validacion:"+sql_to_query);
+        
+        HashMap<String, String> hm = (HashMap<String, String>) this.jdbcTemplate.queryForObject(
+            sql_to_query,
+            new Object[]{}, new RowMapper() {
+                @Override
+                public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    HashMap<String, String> row = new HashMap<String, String>();
+                    row.put("success",rs.getString("poc_val_cusorder"));
+                    return row;
+                }
+            }
+        );
+        return hm;
+    }
+    
+    @Override
+    public String poc_cat_cusorder(PotCatCusorder pc) {
+        String valor_retorno="";
+        Map<String, Object> update = this.getJdbcTemplate().queryForMap(pc.conform_cat_store());
+
+        valor_retorno = update.get("poc_cat_cusorder").toString();
+
+        return valor_retorno;
     }
     
     @Override
