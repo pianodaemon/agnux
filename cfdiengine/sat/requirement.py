@@ -42,10 +42,11 @@ def writedom_cfdi(d, propos, file_out):
     from pyxb.namespace import XMLSchema_instance as xsi
     from pyxb.namespace import XMLNamespaces as xmlns
 
+    foundation_schema = 'http://www.sat.ob.mx/cfd/3 http://www.sat.ob.mx/sitio_internet/cfd/3/cfdv33.xsd'
+
     def makeup_fac():
         d.documentElement.setAttributeNS(
-            xsi.uri(), 'xsi:schemaLocation',
-            'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd')
+            xsi.uri(), 'xsi:schemaLocation', foundation_schema)
         d.documentElement.setAttributeNS(xmlns.uri(), 'xmlns:xsi', xsi.uri())
 
         return {
@@ -53,10 +54,22 @@ def writedom_cfdi(d, propos, file_out):
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
 
+    def makeup_pag():
+        pag_schema = 'http://www.sat.ob.mx/Pagos http://www.sat.ob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd'
+        d.documentElement.setAttributeNS(
+            xsi.ri(), 'xsi:schemaLocation', '{} {}'.format(foundation_schema, pag_schema))
+        d.documentElement.setAttributeNS(xmlns.ri(), 'xmlns:xsi', xsi.ri())
+
+        return {
+            'cfdi': 'http://www.sat.ob.mx/cfd/3',
+            'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
+        }
+
     try:
         namespace_set = {
             sa.CfdiType.FAC: makeup_fac,
-            sa.CfdiType.NCR: makeup_fac
+            sa.CfdiType.NCR: makeup_fac,
+            sa.CfdiType.PAG: makeup_pag,
         }[propos]()
         for prefix, uri in namespace_set.items():
             ET.register_namespace(prefix, uri)
