@@ -142,6 +142,41 @@ class PagXml(BuilderGen):
                 'TIPO_DE_CAMBIO': row['tipo_cambio']
             }
 
+    def __q_conceptos(self, conn, nc_id):
+        """
+        Consulta los conceptos de el pago en dbms
+        """
+        q = """SELECT '84111506'::character varying AS clave_prod,
+            'ACT'::character varying AS clave_unidad,
+            'ACT'::character varying AS unidad,
+            '1'::double precision AS cantidad,
+            '0'::character varying AS no_identificacion,
+            'Pago'::character varying AS descripcion,
+            NC.subtotal as valor_unitario, #
+            NC.subtotal as importe, #
+            '0'::double precision AS descto, #
+            '0'::double precision AS tasa_ieps, #
+            '0'::integer as ieps_id, #
+            NC.valor_impuesto AS tasa_impuesto, #
+            GI.id AS impto_id #
+            FROM fac_nota_credito AS NC #
+            JOIN gral_suc AS SUC on NC.gral_suc_id = SUC.id #
+            JOIN gral_imptos AS GI ON GI.id = SUC.gral_impto_id #
+            WHERE NC.id = """ #
+        rowset = []
+        for row in self.pg_query(conn, "{0}{1}".format(q, nc_id)):
+            rowset.append({
+                'PRODSERV': row['clave_prod'],
+                'SKU': row['no_identificacion'],
+                'UNIDAD': row['clave_unidad'],
+                'CANTIDAD': row['cantidad'],
+                'DESCRIPCION': row['descripcion'],
+                'PRECIO_UNITARIO': self.__narf(row['valor_unitario']),
+                'IMPORTE': self.__narf(row['importe']),
+            })
+        return rowset
+
+
     def data_acq(self, conn, d_rdirs, **kwargs):
 
         usr_id = kwargs.get('usr_id', None)
@@ -167,6 +202,8 @@ class PagXml(BuilderGen):
         if pag_id is None:
             raise DocBuilderStepError("pag id not fed")
 
+        conceptos = self.__q_conceptos(conn, pag_id)
+
         return {
             'MONEDA': self.__q_moneda(conn, pag_id),
             'TIME_STAMP': '{0:%Y-%m-%dT%H:%M:%S}'.format(datetime.datetime.now()),
@@ -178,6 +215,7 @@ class PagXml(BuilderGen):
             'NUMERO_CERTIFICADO': self.__q_no_certificado(conn, usr_id),
             'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
+            'CONCEPTOS': conceptos,
         }
 
 
@@ -215,3 +253,7 @@ class PagXml(BuilderGen):
             # optional (requerido en ciertos casos)
             c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
         c.Moneda = dat['MONEDA']['ISO_4217']
+
+
+    def data_rel(self, dat):
+        pass
