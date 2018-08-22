@@ -78,6 +78,24 @@ class PagXml(BuilderGen):
                 'REGIMEN_FISCAL': row['numero_control']
             }
 
+    def __q_receptor(self, conn, pag_id):
+        """
+        Consulta el cliente de el pago en dbms
+        """
+        SQL = """SELECT
+            upper(cxc_clie.razon_social) as razon_social,
+            upper(cxc_clie.rfc) as rfc
+            FROM erp_pagos
+            LEFT JOIN cxc_clie ON cxc_clie.id = erp_pagos.cliente_id
+            WHERE erp_pagos.numero_transaccion = """
+        for row in self.pg_query(conn, "{0}{1}".format(SQL, pag_id)):
+            # Just taking first row of query result
+            return {
+                'RFC': row['rfc'],
+                'RAZON_SOCIAL': unidecode.unidecode(row['razon_social']),
+                'USO_CFDI': 'P01'
+            }
+
     def __q_no_certificado(self, conn, usr_id):
         """
         Consulta el numero de certificado en dbms
@@ -134,7 +152,6 @@ class PagXml(BuilderGen):
         ed = self.__q_emisor(conn, usr_id)
         sp = self.__q_sign_params(conn, usr_id)
 
-
         # dirs with full emisor rfc path
         sslrfc_dir = os.path.join(d_rdirs['ssl'], ed['RFC'])
         cert_file = os.path.join(
@@ -171,6 +188,11 @@ class PagXml(BuilderGen):
         c.Version = '3.3'
         c.Fecha = dat['TIME_STAMP']
         c.Sello = '__DIGITAL_SIGN_HERE__'
+
+        c.Receptor = pyxb.BIND()
+        c.Receptor.Nombre = dat['RECEPTOR']['RAZON_SOCIAL']  # optional
+        c.Receptor.Rfc = dat['RECEPTOR']['RFC']
+        c.Receptor.UsoCFDI = dat['RECEPTOR']['USO_CFDI']
 
         c.Emisor = pyxb.BIND()
         c.Emisor.Nombre = dat['EMISOR']['RAZON_SOCIAL']  # optional
