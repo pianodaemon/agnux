@@ -38,7 +38,7 @@ class PagXml(BuilderGen):
             FROM gral_suc AS SUC
             LEFT JOIN gral_usr_suc ON gral_usr_suc.gral_suc_id = SUC.id
             LEFT JOIN fac_cfds_conf ON fac_cfds_conf.gral_suc_id = SUC.id
-            WHERE gral_usr_suc.gral_usr_id="""
+            WHERE gral_usr_suc.gral_usr_id = """
         for row in self.pg_query(conn, "{0}{1}".format(q, usr_id)):
             # Just taking first row of query result
             return row['cert_file']
@@ -78,6 +78,24 @@ class PagXml(BuilderGen):
                 'REGIMEN_FISCAL': row['numero_control']
             }
 
+    def __q_receptor(self, conn, pag_id):
+        """
+        Consulta el cliente de el pago en dbms
+        """
+        SQL = """SELECT
+            upper(cxc_clie.razon_social) as razon_social,
+            upper(cxc_clie.rfc) as rfc
+            FROM erp_pagos
+            LEFT JOIN cxc_clie ON cxc_clie.id = erp_pagos.cliente_id
+            WHERE erp_pagos.numero_transaccion = """
+        for row in self.pg_query(conn, "{0}{1}".format(SQL, pag_id)):
+            # Just taking first row of query result
+            return {
+                'RFC': row['rfc'],
+                'RAZON_SOCIAL': unidecode.unidecode(row['razon_social']),
+                'USO_CFDI': 'P01'
+            }
+
     def __q_no_certificado(self, conn, usr_id):
         """
         Consulta el numero de certificado en dbms
@@ -106,6 +124,24 @@ class PagXml(BuilderGen):
                 'PKNAME': row['pk']
             }
 
+    def __q_moneda(self, conn, pag_id):
+        """
+        Consulta la moneda de el pago en dbms
+        """
+        q = """SELECT
+            upper(iso_4217),
+            upper(simbolo_moneda_fac) as moneda_simbolo,
+            tipo_cambio
+            FROM pagos
+            WHERE numero_transaccion = """
+        for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
+            # Just taking first row of query result
+            return {
+                'ISO_4217': row['iso_4217'],
+                'SIMBOLO': row['moneda_simbolo'],
+                'TIPO_DE_CAMBIO': row['tipo_cambio']
+            }
+
     def data_acq(self, conn, d_rdirs, **kwargs):
 
         usr_id = kwargs.get('usr_id', None)
@@ -115,7 +151,6 @@ class PagXml(BuilderGen):
 
         ed = self.__q_emisor(conn, usr_id)
         sp = self.__q_sign_params(conn, usr_id)
-
 
         # dirs with full emisor rfc path
         sslrfc_dir = os.path.join(d_rdirs['ssl'], ed['RFC'])
@@ -133,6 +168,7 @@ class PagXml(BuilderGen):
             raise DocBuilderStepError("pag id not fed")
 
         return {
+            'MONEDA': self.__q_moneda(conn, pag_id),
             'TIME_STAMP': '{0:%Y-%m-%dT%H:%M:%S}'.format(datetime.datetime.now()),
             'CONTROL': self.__q_serie_folio(conn, usr_id),
             'CERT_B64': certb64,
@@ -140,6 +176,7 @@ class PagXml(BuilderGen):
             'XSLT_SCRIPT': os.path.join(d_rdirs['cfdi_xslt'], self.__XSLT_PAG),
             'EMISOR': ed,
             'NUMERO_CERTIFICADO': self.__q_no_certificado(conn, usr_id),
+            'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
         }
 
@@ -152,6 +189,11 @@ class PagXml(BuilderGen):
         c.Version = '3.3'
         c.Fecha = dat['TIME_STAMP']
         c.Sello = '__DIGITAL_SIGN_HERE__'
+
+        c.Receptor = pyxb.BIND()
+        c.Receptor.Nombre = dat['RECEPTOR']['RAZON_SOCIAL']  # optional
+        c.Receptor.Rfc = dat['RECEPTOR']['RFC']
+        c.Receptor.UsoCFDI = dat['RECEPTOR']['USO_CFDI']
 
         c.Emisor = pyxb.BIND()
         c.Emisor.Nombre = dat['EMISOR']['RAZON_SOCIAL']  # optional
@@ -166,3 +208,10 @@ class PagXml(BuilderGen):
         c.Certificado = dat['CERT_B64']
 
         c.TipoDeComprobante = 'P'
+
+        if dat['MONEDA']['ISO_4217'] == 'MXN':
+            c.TipoCambio = 1
+        else:
+            # optional (requerido en ciertos casos)
+            c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
+        c.Moneda = dat['MONEDA']['ISO_4217']
