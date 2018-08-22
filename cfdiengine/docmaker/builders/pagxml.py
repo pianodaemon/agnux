@@ -106,6 +106,25 @@ class PagXml(BuilderGen):
                 'PKNAME': row['pk']
             }
 
+    def __q_moneda(self, conn, nc_id):
+        """
+        Consulta la moneda de el pago en dbms
+        """
+        q = """SELECT
+            upper(gral_mon.iso_4217) AS moneda_iso_4217,
+            upper(gral_mon.simbolo) AS moneda_simbolo,
+            fac_nota_credito.tipo_cambio
+            FROM TABLA_PAGOS
+            JOIN gral_mon ON gral_mon.id = TABLA_PAGOS.moneda_id
+            WHERE TABLA_PAGOS.id = """
+        for row in self.pg_query(conn, "{0}{1}".format(q, nc_id)):
+            # Just taking first row of query result
+            return {
+                'ISO_4217': row['moneda_iso_4217'],
+                'SIMBOLO': row['moneda_simbolo'],
+                'TIPO_DE_CAMBIO': row['tipo_cambio']
+            }
+
     def data_acq(self, conn, d_rdirs, **kwargs):
 
         usr_id = kwargs.get('usr_id', None)
