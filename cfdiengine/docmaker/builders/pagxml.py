@@ -111,16 +111,15 @@ class PagXml(BuilderGen):
         Consulta la moneda de el pago en dbms
         """
         q = """SELECT
-            upper(gral_mon.iso_4217) AS moneda_iso_4217,
-            upper(gral_mon.simbolo) AS moneda_simbolo,
-            TABLA_PAGOS.tipo_cambio
-            FROM TABLA_PAGOS
-            JOIN gral_mon ON gral_mon.id = TABLA_PAGOS.moneda_id
-            WHERE TABLA_PAGOS.id = """
+            upper(iso_4217),
+            upper(simbolo_moneda_fac) as moneda_simbolo,
+            tipo_cambio
+            FROM pagos
+            WHERE numero_transaccion = """
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
             return {
-                'ISO_4217': row['moneda_iso_4217'],
+                'ISO_4217': row['iso_4217'],
                 'SIMBOLO': row['moneda_simbolo'],
                 'TIPO_DE_CAMBIO': row['tipo_cambio']
             }
@@ -152,6 +151,7 @@ class PagXml(BuilderGen):
             raise DocBuilderStepError("pag id not fed")
 
         return {
+            'MONEDA': self.__q_moneda(conn, pag_id),
             'TIME_STAMP': '{0:%Y-%m-%dT%H:%M:%S}'.format(datetime.datetime.now()),
             'CONTROL': self.__q_serie_folio(conn, usr_id),
             'CERT_B64': certb64,
