@@ -142,6 +142,32 @@ class PagXml(BuilderGen):
                 'TIPO_DE_CAMBIO': row['tipo_cambio']
             }
 
+    def __q_conceptos(self, conn):
+        """
+        Hack que consulta los conceptos de el pago en dbms
+        """
+        q = """SELECT '84111506'::character varying AS clave_prod,
+            'ACT'::character varying AS clave_unidad,
+            'ACT'::character varying AS unidad,
+            '1'::double precision AS cantidad,
+            '0'::character varying AS no_identificacion,
+            'Pago'::character varying AS descripcion,
+            '0'::double precision as valor_unitario,
+            '0'::double precision as importe """
+        rowset = []
+        for row in self.pg_query(conn, "{0}{1}".format(q)):
+            rowset.append({
+                'PRODSERV': row['clave_prod'],
+                'SKU': row['no_identificacion'],
+                'UNIDAD': row['clave_unidad'],
+                'CANTIDAD': row['cantidad'],
+                'DESCRIPCION': row['descripcion'],
+                'PRECIO_UNITARIO': self.__narf(row['valor_unitario']),
+                'IMPORTE': self.__narf(row['importe']),
+            })
+        return rowset
+
+
     def data_acq(self, conn, d_rdirs, **kwargs):
 
         usr_id = kwargs.get('usr_id', None)
@@ -167,6 +193,8 @@ class PagXml(BuilderGen):
         if pag_id is None:
             raise DocBuilderStepError("pag id not fed")
 
+        conceptos = self.__q_conceptos(conn)
+
         return {
             'MONEDA': self.__q_moneda(conn, pag_id),
             'TIME_STAMP': '{0:%Y-%m-%dT%H:%M:%S}'.format(datetime.datetime.now()),
@@ -178,6 +206,7 @@ class PagXml(BuilderGen):
             'NUMERO_CERTIFICADO': self.__q_no_certificado(conn, usr_id),
             'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
+            'CONCEPTOS': conceptos,
         }
 
 
@@ -215,3 +244,18 @@ class PagXml(BuilderGen):
             # optional (requerido en ciertos casos)
             c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
         c.Moneda = dat['MONEDA']['ISO_4217']
+
+        c.Conceptos = pyxb.BIND()
+        for i in dat['CONCEPTOS']:
+            c.Conceptos.append(pyxb.BIND(
+                Cantidad=i['CANTIDAD'],
+                ClaveUnidad=i['UNIDAD'],
+                ClaveProdServ=i['PRODSERV'],
+                Descripcion=i['DESCRIPCION'],
+                ValorUnitario=i['PRECIO_UNITARIO'],
+                NoIdentificacion=i['SKU'],  # optional
+                Importe=i['IMPORTE']
+        ))
+
+    def data_rel(self, dat):
+        pass
