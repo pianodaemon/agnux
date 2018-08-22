@@ -42,7 +42,7 @@ def writedom_cfdi(d, propos, file_out):
     from pyxb.namespace import XMLSchema_instance as xsi
     from pyxb.namespace import XMLNamespaces as xmlns
 
-    foundation_schema = 'http://www.sat.ob.mx/cfd/3 http://www.sat.ob.mx/sitio_internet/cfd/3/cfdv33.xsd'
+    foundation_schema = 'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd'
 
     def makeup_fac():
         d.documentElement.setAttributeNS(
@@ -61,7 +61,7 @@ def writedom_cfdi(d, propos, file_out):
         d.documentElement.setAttributeNS(xmlns.ri(), 'xmlns:xsi', xsi.ri())
 
         return {
-            'cfdi': 'http://www.sat.ob.mx/cfd/3',
+            'cfdi': 'http://www.sat.gob.mx/cfd/3',
             'xsi': 'http://www.w3.org/2001/XMLSchema-instance'
         }
 
