@@ -185,3 +185,10 @@ class PagXml(BuilderGen):
         c.Certificado = dat['CERT_B64']
 
         c.TipoDeComprobante = 'P'
+
+        if dat['MONEDA']['ISO_4217'] == 'MXN':
+            c.TipoCambio = 1
+        else:
+            # optional (requerido en ciertos casos)
+            c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
+        c.Moneda = dat['MONEDA']['ISO_4217']
