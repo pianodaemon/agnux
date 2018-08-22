@@ -142,9 +142,9 @@ class PagXml(BuilderGen):
                 'TIPO_DE_CAMBIO': row['tipo_cambio']
             }
 
-    def __q_conceptos(self, conn, nc_id):
+    def __q_conceptos(self, conn):
         """
-        Consulta los conceptos de el pago en dbms
+        Hack que consulta los conceptos de el pago en dbms
         """
         q = """SELECT '84111506'::character varying AS clave_prod,
             'ACT'::character varying AS clave_unidad,
@@ -152,19 +152,10 @@ class PagXml(BuilderGen):
             '1'::double precision AS cantidad,
             '0'::character varying AS no_identificacion,
             'Pago'::character varying AS descripcion,
-            NC.subtotal as valor_unitario, #
-            NC.subtotal as importe, #
-            '0'::double precision AS descto, #
-            '0'::double precision AS tasa_ieps, #
-            '0'::integer as ieps_id, #
-            NC.valor_impuesto AS tasa_impuesto, #
-            GI.id AS impto_id #
-            FROM fac_nota_credito AS NC #
-            JOIN gral_suc AS SUC on NC.gral_suc_id = SUC.id #
-            JOIN gral_imptos AS GI ON GI.id = SUC.gral_impto_id #
-            WHERE NC.id = """ #
+            '0'::double precision as valor_unitario,
+            '0'::double precision as importe """
         rowset = []
-        for row in self.pg_query(conn, "{0}{1}".format(q, nc_id)):
+        for row in self.pg_query(conn, "{0}{1}".format(q)):
             rowset.append({
                 'PRODSERV': row['clave_prod'],
                 'SKU': row['no_identificacion'],
@@ -202,7 +193,7 @@ class PagXml(BuilderGen):
         if pag_id is None:
             raise DocBuilderStepError("pag id not fed")
 
-        conceptos = self.__q_conceptos(conn, pag_id)
+        conceptos = self.__q_conceptos(conn)
 
         return {
             'MONEDA': self.__q_moneda(conn, pag_id),
@@ -254,6 +245,17 @@ class PagXml(BuilderGen):
             c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
         c.Moneda = dat['MONEDA']['ISO_4217']
 
+        c.Conceptos = pyxb.BIND()
+        for i in dat['CONCEPTOS']:
+            c.Conceptos.append(pyxb.BIND(
+                Cantidad=i['CANTIDAD'],
+                ClaveUnidad=i['UNIDAD'],
+                ClaveProdServ=i['PRODSERV'],
+                Descripcion=i['DESCRIPCION'],
+                ValorUnitario=i['PRECIO_UNITARIO'],
+                NoIdentificacion=i['SKU'],  # optional
+                Importe=i['IMPORTE']
+        ))
 
     def data_rel(self, dat):
         pass
