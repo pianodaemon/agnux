@@ -38,7 +38,7 @@ class PagXml(BuilderGen):
             FROM gral_suc AS SUC
             LEFT JOIN gral_usr_suc ON gral_usr_suc.gral_suc_id = SUC.id
             LEFT JOIN fac_cfds_conf ON fac_cfds_conf.gral_suc_id = SUC.id
-            WHERE gral_usr_suc.gral_usr_id="""
+            WHERE gral_usr_suc.gral_usr_id = """
         for row in self.pg_query(conn, "{0}{1}".format(q, usr_id)):
             # Just taking first row of query result
             return row['cert_file']
@@ -176,6 +176,7 @@ class PagXml(BuilderGen):
             'XSLT_SCRIPT': os.path.join(d_rdirs['cfdi_xslt'], self.__XSLT_PAG),
             'EMISOR': ed,
             'NUMERO_CERTIFICADO': self.__q_no_certificado(conn, usr_id),
+            'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
         }
 
