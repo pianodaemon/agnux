@@ -217,7 +217,7 @@ class PagXml(BuilderGen):
             import xml.dom.minidom
 
             doc = xml.dom.minidom.Document()
-            base_ns = "http://www.sat.ob.mx/Pagos"
+            base_ns = "http://www.sat.gob.mx/Pagos"
             pagos = doc.createElementNS(base_ns, 'pago10:Pagos')
             pagos.setAttribute("xmlns:pagos10", base_ns)
             pagos.setAttribute("Version","1.0")
