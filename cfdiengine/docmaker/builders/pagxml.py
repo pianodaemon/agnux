@@ -212,6 +212,29 @@ class PagXml(BuilderGen):
 
     def format_wrt(self, output_file, dat):
 
+        def tag_pagos(elements):
+
+            import xml.dom.minidom
+
+            doc = xml.dom.minidom.Document()
+            base_ns = "http://www.sat.ob.mx/Pagos"
+            pagos = doc.createElementNS(base_ns, 'pago10:Pagos')
+            pagos.setAttribute("xmlns:pagos10", base_ns)
+            pagos.setAttribute("Version","1.0")
+
+            for d in elements:
+                payment = doc.createElement('pago10:Pago')
+                payment.setAttribute('Monto', d['MONTO'])
+                payment.setAttribute('MonedaP', d['ISO_4217'])
+                payment.setAttribute('FormaDePagoP', d['CLAVE'])
+                payment.setAttribute('FechaPago', d['TIME_STAMP'])
+                pagos.appendChild(payment)
+
+            doc.appendChild(pagos)
+            output = doc.toprettyxml()
+            return output[1:]  # ommitting xml declaration
+
+
         self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
 
         c = Comprobante()
