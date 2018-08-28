@@ -167,6 +167,22 @@ class PagXml(BuilderGen):
             })
         return rowset
 
+    def __q_pago(self, conn, pag_id):
+        """
+        Consulta la informacion de el pago
+        """
+        q = """SELECT numero_transaccion AS numero_operacion,
+               serie_folio, moneda_fac, tipo_cambio_p, imp_saldo_ant,
+               imp_pagado, imp_saldo_insoluto
+               FROM pagos WHERE numero_transaccion = """
+        for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
+            # Just taking first row of query result
+            return {
+                'ISO_4217': row['moneda_fac'],
+                'MONTO': row['imp_pagado'],
+                'TIME_STAMP' : row['XXX'],
+                'CLAVE': row['XXX'],
+            }
 
     def data_acq(self, conn, d_rdirs, **kwargs):
 
