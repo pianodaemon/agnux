@@ -171,10 +171,11 @@ class PagXml(BuilderGen):
         """
         Consulta la informacion de el pago
         """
-        q = """SELECT numero_transaccion AS numero_operacion,
-               serie_folio, moneda_fac, tipo_cambio_p, imp_saldo_ant,
-               imp_pagado, imp_saldo_insoluto
-               FROM pagos WHERE numero_transaccion = """
+        q = """ SELECT numero_transaccion AS numero_operacion,
+                monto_aplicado_mn as monto, moneda_p, forma_de_pago_p,
+                fecha_pago, tipo_cambio_p, serie_folio, imp_saldo_ant,
+                imp_pagado, imp_saldo_insoluto, moneda_dr
+                FROM pagos WHERE numero_transaccion = """
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
             return {
@@ -223,6 +224,7 @@ class PagXml(BuilderGen):
             'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
             'CONCEPTOS': conceptos,
+            'COMPLEMENTO_PAGOS': self.__q_pago(conn, pag_id)
         }
 
 
