@@ -167,6 +167,23 @@ class PagXml(BuilderGen):
             })
         return rowset
 
+    def __q_pago(self, conn, pag_id):
+        """
+        Consulta la informacion de el pago
+        """
+        q = """ SELECT numero_transaccion AS numero_operacion,
+                monto_aplicado_mn as monto, moneda_p, forma_de_pago_p,
+                fecha_pago, tipo_cambio_p, serie_folio, imp_saldo_ant,
+                imp_pagado, imp_saldo_insoluto, moneda_dr
+                FROM pagos WHERE numero_transaccion = """
+        for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
+            # Just taking first row of query result
+            return {
+                'ISO_4217': row['moneda_fac'],
+                'MONTO': row['imp_pagado'],
+                'TIME_STAMP' : row['XXX'],
+                'CLAVE': row['XXX'],
+            }
 
     def data_acq(self, conn, d_rdirs, **kwargs):
 
@@ -207,6 +224,7 @@ class PagXml(BuilderGen):
             'RECEPTOR': self.__q_receptor(conn, pag_id),
             'LUGAR_EXPEDICION': self.__q_lugar_expedicion(conn, usr_id),
             'CONCEPTOS': conceptos,
+            'COMPLEMENTO_PAGOS': self.__q_pago(conn, pag_id)
         }
 
 
@@ -217,7 +235,7 @@ class PagXml(BuilderGen):
             import xml.dom.minidom
 
             doc = xml.dom.minidom.Document()
-            base_ns = "http://www.sat.ob.mx/Pagos"
+            base_ns = "http://www.sat.gob.mx/Pagos"
             pagos = doc.createElementNS(base_ns, 'pago10:Pagos')
             pagos.setAttribute("xmlns:pagos10", base_ns)
             pagos.setAttribute("Version","1.0")
