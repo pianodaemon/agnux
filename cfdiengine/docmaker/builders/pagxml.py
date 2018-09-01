@@ -179,10 +179,10 @@ class PagXml(BuilderGen):
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
             return {
-                'ISO_4217': row['moneda_fac'],
+                'ISO_4217': row['moneda_p'],
                 'MONTO': row['imp_pagado'],
-                'TIME_STAMP' : row['XXX'],
-                'CLAVE': row['XXX'],
+                'TIME_STAMP' : row['fecha_pago'],
+                'CLAVE': row['forma_de_pago_p'],
             }
 
     def data_acq(self, conn, d_rdirs, **kwargs):
