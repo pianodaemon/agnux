@@ -183,6 +183,7 @@ class PagXml(BuilderGen):
                 'MONTO': row['imp_pagado'],
                 'TIME_STAMP' : row['fecha_pago'],
                 'CLAVE': row['forma_de_pago_p'],
+                'MONEDA_DR': row['moneda_dr'],
             }
 
     def data_acq(self, conn, d_rdirs, **kwargs):
@@ -246,6 +247,11 @@ class PagXml(BuilderGen):
                 payment.setAttribute('MonedaP', d['ISO_4217'])
                 payment.setAttribute('FormaDePagoP', d['CLAVE'])
                 payment.setAttribute('FechaPago', d['TIME_STAMP'])
+
+                dr = doc.createElement('pago10:DoctoRelacionado')
+                dr.setAttribute('MonedaDR', d['MONEDA_DR'])
+                payment.appendChild(dr)
+
                 pagos.appendChild(payment)
 
             doc.appendChild(pagos)
