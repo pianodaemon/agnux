@@ -181,7 +181,8 @@ class PagXml(BuilderGen):
             return {
                 'IMP_SALDO_ANT': row['imp_saldo_ant'],
                 'ISO_4217': row['moneda_p'],
-                'MONTO': row['imp_pagado'],
+                'MONTO': row['monto'],
+                'IMP_PAGADO': row['imp_pagado'],
                 'TIME_STAMP' : row['fecha_pago'],
                 'CLAVE': row['forma_de_pago_p'],
                 'MONEDA_DR': row['moneda_dr'],
@@ -251,6 +252,7 @@ class PagXml(BuilderGen):
 
                 dr = doc.createElement('pago10:DoctoRelacionado')
                 dr.setAttribute('ImpSaldoAnt', d['IMP_SALDO_ANT'])
+                dr.setAttribute('ImpPagado', d['IMP_PAGADO'])
                 dr.setAttribute('MonedaDR', d['MONEDA_DR'])
                 payment.appendChild(dr)
 
