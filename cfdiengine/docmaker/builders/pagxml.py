@@ -179,6 +179,7 @@ class PagXml(BuilderGen):
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
             return {
+                'NUMERO_OPERACION': row['numero_operacion'],
                 'IMP_SALDO_INSOLUTO': row['imp_saldo_insoluto'],
                 'IMP_SALDO_ANT': row['imp_saldo_ant'],
                 'ISO_4217': row['moneda_p'],
@@ -246,6 +247,7 @@ class PagXml(BuilderGen):
 
             for d in elements:
                 payment = doc.createElement('pago10:Pago')
+                payment.setAttribute('NumOperacion', d['NUMERO_OPERACION'])
                 payment.setAttribute('Monto', d['MONTO'])
                 payment.setAttribute('MonedaP', d['ISO_4217'])
                 payment.setAttribute('FormaDePagoP', d['CLAVE'])
