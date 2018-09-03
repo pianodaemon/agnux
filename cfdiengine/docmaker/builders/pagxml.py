@@ -258,6 +258,8 @@ class PagXml(BuilderGen):
                 dr.setAttribute('ImpSaldoAnt', d['IMP_SALDO_ANT'])
                 dr.setAttribute('ImpPagado', d['IMP_PAGADO'])
                 dr.setAttribute('MonedaDR', d['MONEDA_DR'])
+                dr.setAttribute('NumParcialidad', '1')
+                dr.setAttributeetAttribute('MontoDePagoDR', 'PPD')
                 payment.appendChild(dr)
 
                 pagos.appendChild(payment)
