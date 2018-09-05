@@ -174,7 +174,7 @@ class PagXml(BuilderGen):
         q = """ SELECT numero_transaccion AS numero_operacion,
                 monto_aplicado_mn as monto, moneda_p, forma_de_pago_p,
                 fecha_pago, tipo_cambio_p, serie_folio, imp_saldo_ant,
-                imp_pagado, imp_saldo_insoluto, moneda_dr
+                imp_pagado, imp_saldo_insoluto, moneda_dr, id_documento
                 FROM pagos WHERE numero_transaccion = """
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
@@ -188,6 +188,7 @@ class PagXml(BuilderGen):
                 'TIME_STAMP' : row['fecha_pago'],
                 'CLAVE': row['forma_de_pago_p'],
                 'MONEDA_DR': row['moneda_dr'],
+                'UUID_DOC': row['id_documento'],
             }
 
     def data_acq(self, conn, d_rdirs, **kwargs):
@@ -254,6 +255,7 @@ class PagXml(BuilderGen):
                 payment.setAttribute('FechaPago', d['TIME_STAMP'])
 
                 dr = doc.createElement('pago10:DoctoRelacionado')
+                dr.setAttribute('IdDocumento', d['UUID_DOC'])
                 dr.setAttribute('ImpSaldoInsoluto', d['IMP_SALDO_INSOLUTO'])
                 dr.setAttribute('ImpSaldoAnt', d['IMP_SALDO_ANT'])
                 dr.setAttribute('ImpPagado', d['IMP_PAGADO'])
