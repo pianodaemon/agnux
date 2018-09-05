@@ -236,6 +236,35 @@ class PagXml(BuilderGen):
 
     def format_wrt(self, output_file, dat):
 
+        self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
+
+        def save(xo):
+            tmp_dir = tempfile.gettempdir()
+            f = os.path.join(tmp_dir, HelperStr.random_str())
+            writedom_cfdi(xo.toDOM(), self.__MAKEUP_PROPOS, f)
+            return f
+
+        def wa(tf):
+            """
+            The sundry work arounds to apply
+            """
+            HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
+            HelperStr.edit_pattern(
+                '(Importe=)"([0-9]*(\.[0-9]{0,1})?)"',
+                lambda x: 'Importe="%.2f"' % (float(x.group(2)),), tf
+            )
+
+        def wrap_up(tf, of):
+            with open(of, 'w', encoding="utf-8") as a:
+                a.write(
+                    sign_cfdi(
+                        dat['KEY_PRIVATE'],
+                        dat['XSLT_SCRIPT'],
+                        tf
+                    )
+                )
+            os.remove(tf)
+
         def tag_pagos(elements):
 
             import xml.dom.minidom
@@ -270,8 +299,6 @@ class PagXml(BuilderGen):
             output = doc.toprettyxml()
             return output[1:]  # ommitting xml declaration
 
-
-        self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
 
         c = Comprobante()
         c.Version = '3.3'
@@ -315,6 +342,11 @@ class PagXml(BuilderGen):
                 NoIdentificacion=i['SKU'],  # optional
                 Importe=i['IMPORTE']
         ))
+
+        tmp_file = save(c)
+        wa(tmp_file)
+        wrap_up(tmp_file, output_file)
+
 
     def data_rel(self, dat):
         pass
