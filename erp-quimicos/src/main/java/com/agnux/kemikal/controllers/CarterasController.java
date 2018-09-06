@@ -5,6 +5,7 @@
 
 package com.agnux.kemikal.controllers;
 import com.agnux.cfd.v2.Base64Coder;
+import com.agnux.cfdi.LegacyRequest;
 import com.agnux.common.helpers.FileHelper;
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.obj.DataPost;
@@ -538,6 +539,18 @@ public class CarterasController {
                 actualizo = this.getCxcDao().selectFunctionForThisApp(data_string, extra_data_array);
                 jsonretorno.put("numero_transaccion",String.valueOf(actualizo.split("___")[0]));
                 jsonretorno.put("identificador_pago",String.valueOf(actualizo.split("___")[1]));
+                
+                LegacyRequest req = new LegacyRequest();
+
+                req.sendTo("cxc");
+                req.from("webui");
+                req.action("dopago");
+         
+                HashMap<String, String> kwargs = new HashMap<String, String>();
+                kwargs.put("filename", filename);
+                kwargs.put("usr_id", id_usuario.toString());
+                kwargs.put("prefact_id", id_prefactura.toString());
+                req.args(kwargs);
             }
             
             jsonretorno.put("success",String.valueOf(succes.get("success")));
