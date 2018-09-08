@@ -532,7 +532,8 @@ public class CarterasController {
             
             if(String.valueOf(succes.get("success")).equals("true")){
                 actualizo = this.getCxcDao().selectFunctionForThisApp(data_string, extra_data_array);
-                jsonretorno.put("numero_transaccion",String.valueOf(actualizo.split("___")[0]));
+                String pag_id = String.valueOf(actualizo.split("___")[0]);
+                jsonretorno.put("numero_transaccion", pag_id);
                 jsonretorno.put("identificador_pago",String.valueOf(actualizo.split("___")[1]));
                 
                 /* From this point onward 
@@ -553,7 +554,7 @@ public class CarterasController {
                 HashMap<String, String> kwargs = new HashMap<String, String>();
                 kwargs.put("filename", filename);
                 kwargs.put("usr_id", id_usuario.toString());
-                kwargs.put("pag_id", pag_id.toString()); <--- # Where are we gonna seek pag_id variable out ?
+                kwargs.put("pag_id", pag_id.toString());
                 req.args(kwargs);
                 
                 BbgumProxy bbgumProxy = new BbgumProxy();
