@@ -1,10 +1,3 @@
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 12/03/2012
- */
-
 package com.agnux.kemikal.interfacedaos;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -218,4 +211,6 @@ public interface CxcInterfaceDao {
     
     //Reporte de Ieps Cobrado por Cliente
     public ArrayList<HashMap<String, String>> getDatosCxcReporteIepsCobradoPorCliente(ArrayList<HashMap<String, String>> listaIeps, String ciente, String finicial, String ffinal, Integer id_empresa);
+
+    public String q_serie_folio(Integer id_usuario);
 }
