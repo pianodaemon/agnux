@@ -562,15 +562,15 @@ public class CarterasController {
                     ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
                     String msg = "core reply code: " + reply.getReplyCode();
                     if (reply.getReplyCode() == 0) {
-                        Logger.getLogger(PrefacturasController.class.getName()).log(
+                        Logger.getLogger(CarterasController.class.getName()).log(
                                 Level.INFO, msg);
                         jsonretorno.put("folio", serieFolio);
                     } else {
-                        Logger.getLogger(PrefacturasController.class.getName()).log(
+                        Logger.getLogger(CarterasController.class.getName()).log(
                                 Level.WARNING, msg);
                     }
                 } catch (BbgumProxyError ex) {
-                    Logger.getLogger(PrefacturasController.class.getName()).log(
+                    Logger.getLogger(CarterasController.class.getName()).log(
                             Level.WARNING, ex.getMessage());
                 }
             }
