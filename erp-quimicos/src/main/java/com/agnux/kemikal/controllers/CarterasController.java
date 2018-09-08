@@ -16,7 +16,10 @@ import com.agnux.kemikal.interfacedaos.GralInterfaceDao;
 import com.agnux.kemikal.interfacedaos.HomeInterfaceDao;
 import com.agnux.kemikal.reportes.PdfDepositos;
 import com.agnux.kemikal.reportes.PdfReporteAplicacionPago;
+import com.agnux.tcp.BbgumProxy;
+import com.agnux.tcp.BbgumProxyError;
 import com.itextpdf.text.DocumentException;
+import com.maxima.bbgum.ServerReply;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -461,7 +464,7 @@ public class CarterasController {
             @RequestParam(value="iu", required=true) String id_user,
             @RequestParam(value="saldo_a_favor", required=true) String saldo_a_favor,
             Model model
-            ) {
+            ) throws BbgumProxyError, IOException {
             
             Integer id=0;//esta variable solo se declaro para pasar al procedimiento
             Integer app_selected = 14;
@@ -532,11 +535,13 @@ public class CarterasController {
                 jsonretorno.put("numero_transaccion",String.valueOf(actualizo.split("___")[0]));
                 jsonretorno.put("identificador_pago",String.valueOf(actualizo.split("___")[1]));
                 
-                //Numero de Identificacion unica de la Empresa
+                /* From this point onward 
+                This code really sucks !!, because of there no clear strategy to catch the error and show it at user's interface
+                Conversily user's interface will never know if the request has gone missing */
                 HashMap<String, String> userDat = this.getHomeDao().getUserById(id_usuario);
                 Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
                 String no_id = this.getGralDao().getNoIdEmpresa(id_empresa);
-                String serieFolio = this.getCxcDao().q_serie_folio(id_usuario);  <--- # It is required an implementarion for this funcion within DAO
+                String serieFolio = this.getCxcDao().q_serie_folio(id_usuario);
                 String filename = no_id + "_" + serieFolio + ".xml";
                 
                 LegacyRequest req = new LegacyRequest();
@@ -550,11 +555,29 @@ public class CarterasController {
                 kwargs.put("usr_id", id_usuario.toString());
                 kwargs.put("pag_id", pag_id.toString()); <--- # Where are we gonna seek pag_id variable out ?
                 req.args(kwargs);
+                
+                BbgumProxy bbgumProxy = new BbgumProxy();
+
+                try {
+                    ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
+                    String msg = "core reply code: " + reply.getReplyCode();
+                    if (reply.getReplyCode() == 0) {
+                        Logger.getLogger(PrefacturasController.class.getName()).log(
+                                Level.INFO, msg);
+                        jsonretorno.put("folio", serieFolio);
+                    } else {
+                        Logger.getLogger(PrefacturasController.class.getName()).log(
+                                Level.WARNING, msg);
+                    }
+                } catch (BbgumProxyError ex) {
+                    Logger.getLogger(PrefacturasController.class.getName()).log(
+                            Level.WARNING, ex.getMessage());
+                }
             }
             
             jsonretorno.put("success",String.valueOf(succes.get("success")));
-            //System.out.println("numero_transaccion: "+jsonretorno.get("numero_transaccion"));
-            //System.out.println("identificador_pago: "+jsonretorno.get("identificador_pago"));
+            System.out.println("numero_transaccion: "+jsonretorno.get("numero_transaccion"));
+            System.out.println("identificador_pago: "+jsonretorno.get("identificador_pago"));
             
             log.log(Level.INFO, "Salida json {0}", String.valueOf(jsonretorno.get("success")));
         return jsonretorno;
