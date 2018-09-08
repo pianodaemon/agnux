@@ -471,22 +471,14 @@ public class CarterasController {
             
             //decodificar id de usuario
             Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-            //System.out.println("id_usuario: "+id_usuario);
-            
-             /*
-            valores
-             folio_transaccion//esta se debe generar por un procedimiento
-            */
+
             
             System.out.println("monto_pago:"+monto_pago +"     anticipo_gastado: "+anticipo_gastado +"     no_transaccion_anticipo:"+no_transaccion_anticipo);
             
             
             String[] arreglo = cadena_valores.split("&");
             
-            for(int i=0; i<arreglo.length; i++) { 
-                //System.out.println("Valor posicion"+i+": "+arreglo[i]);
-                arreglo[i] = "'"+arreglo[i]+"'";
-            }
+            for(int i=0; i<arreglo.length; i++) arreglo[i] = "'"+arreglo[i]+"'";
             
             
             Calendar calendario = Calendar.getInstance();
@@ -540,6 +532,13 @@ public class CarterasController {
                 jsonretorno.put("numero_transaccion",String.valueOf(actualizo.split("___")[0]));
                 jsonretorno.put("identificador_pago",String.valueOf(actualizo.split("___")[1]));
                 
+                //Numero de Identificacion unica de la Empresa
+                HashMap<String, String> userDat = this.getHomeDao().getUserById(id_usuario);
+                Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
+                String no_id = this.getGralDao().getNoIdEmpresa(id_empresa);
+                String serieFolio = this.getCxcDao().q_serie_folio(id_usuario);  <--- # It is required an implementarion for this funcion within DAO
+                String filename = no_id + "_" + serieFolio + ".xml";
+                
                 LegacyRequest req = new LegacyRequest();
 
                 req.sendTo("cxc");
@@ -549,7 +548,7 @@ public class CarterasController {
                 HashMap<String, String> kwargs = new HashMap<String, String>();
                 kwargs.put("filename", filename);
                 kwargs.put("usr_id", id_usuario.toString());
-                kwargs.put("prefact_id", id_prefactura.toString());
+                kwargs.put("pag_id", pag_id.toString()); <--- # Where are we gonna seek pag_id variable out ?
                 req.args(kwargs);
             }
             
