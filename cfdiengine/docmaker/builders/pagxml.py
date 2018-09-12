@@ -30,6 +30,18 @@ class PagXml(BuilderGen):
     def __narf(self, v):
         return  Decimal(truncate(float(v), self.__NDECIMALS, True))
 
+    def __q_lugar_expedicion(self, conn, usr_id):
+        """
+        Consulta el lugar de expedicion en dbms
+        """
+        q = """select SUC.cp
+            FROM gral_suc AS SUC
+            LEFT JOIN gral_usr_suc as USR_SUC ON USR_SUC.gral_suc_id=SUC.id
+            WHERE USR_SUC.gral_usr_id="""
+        for row in self.pg_query(conn, "{0}{1}".format(q, usr_id)):
+            # Just taking first row of query result
+            return row['cp']
+
     def __q_cert_file(self, conn, usr_id):
         """
         Consulta el certificado que usa el usuario en dbms
@@ -129,9 +141,9 @@ class PagXml(BuilderGen):
         Consulta la moneda de el pago en dbms
         """
         q = """SELECT
-            upper(iso_4217),
+            upper(moneda_p) as iso_4217,
             upper(simbolo_moneda_fac) as moneda_simbolo,
-            tipo_cambio
+            tipo_cambio_p
             FROM pagos
             WHERE numero_transaccion = """
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
@@ -139,7 +151,7 @@ class PagXml(BuilderGen):
             return {
                 'ISO_4217': row['iso_4217'],
                 'SIMBOLO': row['moneda_simbolo'],
-                'TIPO_DE_CAMBIO': row['tipo_cambio']
+                'TIPO_DE_CAMBIO': row['tipo_cambio_p']
             }
 
     def __q_conceptos(self, conn):
@@ -155,7 +167,7 @@ class PagXml(BuilderGen):
             '0'::double precision as valor_unitario,
             '0'::double precision as importe """
         rowset = []
-        for row in self.pg_query(conn, "{0}{1}".format(q)):
+        for row in self.pg_query(conn, "{0}".format(q)):
             rowset.append({
                 'PRODSERV': row['clave_prod'],
                 'SKU': row['no_identificacion'],
