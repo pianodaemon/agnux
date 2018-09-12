@@ -183,25 +183,28 @@ class PagXml(BuilderGen):
         """
         Consulta la informacion de el pago
         """
-        q = """ SELECT numero_transaccion AS numero_operacion,
-                monto_aplicado_mn as monto, moneda_p, forma_de_pago_p,
-                fecha_pago, tipo_cambio_p, serie_folio, imp_saldo_ant,
-                imp_pagado, imp_saldo_insoluto, moneda_dr, id_documento
+        q = """ SELECT numero_transaccion::character varying AS numero_operacion,
+                monto_aplicado_mn::character varying as monto, moneda_p, forma_de_pago_p,
+                fecha_pago, tipo_cambio_p, serie_folio, imp_saldo_ant::character varying,
+                imp_pagado::character varying , imp_saldo_insoluto::character varying,
+                moneda_dr, id_documento
                 FROM pagos WHERE numero_transaccion = """
+        rowset = []
         for row in self.pg_query(conn, "{0}{1}".format(q, pag_id)):
             # Just taking first row of query result
-            return {
+            rowset.append({
                 'NUMERO_OPERACION': row['numero_operacion'],
                 'IMP_SALDO_INSOLUTO': row['imp_saldo_insoluto'],
                 'IMP_SALDO_ANT': row['imp_saldo_ant'],
                 'ISO_4217': row['moneda_p'],
                 'MONTO': row['monto'],
                 'IMP_PAGADO': row['imp_pagado'],
-                'TIME_STAMP' : row['fecha_pago'],
+                'TIME_STAMP' : "2017-08-22T14:37:50", #row['fecha_pago'],
                 'CLAVE': row['forma_de_pago_p'],
                 'MONEDA_DR': row['moneda_dr'],
                 'UUID_DOC': row['id_documento'],
-            }
+            })
+        return rowset
 
     def data_acq(self, conn, d_rdirs, **kwargs):
 
@@ -277,7 +280,7 @@ class PagXml(BuilderGen):
                 )
             os.remove(tf)
 
-        def tag_pagos(elements):
+        def paste_tag_pagos(tf, elements):
 
             import xml.dom.minidom
 
@@ -302,14 +305,18 @@ class PagXml(BuilderGen):
                 dr.setAttribute('ImpPagado', d['IMP_PAGADO'])
                 dr.setAttribute('MonedaDR', d['MONEDA_DR'])
                 dr.setAttribute('NumParcialidad', '1')
-                dr.setAttributeetAttribute('MontoDePagoDR', 'PPD')
+                dr.setAttribute('MontoDePagoDR', 'PPD')
                 payment.appendChild(dr)
 
                 pagos.appendChild(payment)
 
             doc.appendChild(pagos)
-            output = doc.toprettyxml()
-            return output[1:]  # ommitting xml declaration
+            content_xml = output = doc.toprettyxml()
+            chunk = "{}\n{}\n{}\n{}".format('<cfdi:Complemento>',
+                                  content_xml[1:], # omits xml declaration
+                                  '</cfdi:Complemento>',
+                                  '</cfdi:Comprobante>')
+            HelperStr.edit_pattern('</cfdi:Comprobante>', chunk, tf)
 
 
         c = Comprobante()
@@ -335,7 +342,8 @@ class PagXml(BuilderGen):
         c.Certificado = dat['CERT_B64']
 
         c.TipoDeComprobante = 'P'
-
+        c.Total = '0'
+        c.SubTotal = '0'
         if dat['MONEDA']['ISO_4217'] == 'MXN':
             c.TipoCambio = 1
         else:
@@ -356,6 +364,7 @@ class PagXml(BuilderGen):
         ))
 
         tmp_file = save(c)
+        paste_tag_pagos(tmp_file, dat['COMPLEMENTO_PAGOS'])
         wa(tmp_file)
         wrap_up(tmp_file, output_file)
 
