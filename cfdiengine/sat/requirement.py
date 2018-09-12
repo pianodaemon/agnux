@@ -57,8 +57,8 @@ def writedom_cfdi(d, propos, file_out):
     def makeup_pag():
         pag_schema = 'http://www.sat.ob.mx/Pagos http://www.sat.ob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd'
         d.documentElement.setAttributeNS(
-            xsi.ri(), 'xsi:schemaLocation', '{} {}'.format(foundation_schema, pag_schema))
-        d.documentElement.setAttributeNS(xmlns.ri(), 'xmlns:xsi', xsi.ri())
+            xsi.uri(), 'xsi:schemaLocation', '{} {}'.format(foundation_schema, pag_schema))
+        d.documentElement.setAttributeNS(xmlns.uri(), 'xmlns:xsi', xsi.uri())
 
         return {
             'cfdi': 'http://www.sat.gob.mx/cfd/3',
