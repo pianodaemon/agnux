@@ -313,7 +313,7 @@ class PagXml(BuilderGen):
             doc.appendChild(pagos)
             content_xml = output = doc.toprettyxml()
             chunk = "{}\n{}\n{}\n{}".format('<cfdi:Complemento>',
-                                  content_xml[1:], # omits xml declaration
+                                  content_xml[22:], # omits xml declaration
                                   '</cfdi:Complemento>',
                                   '</cfdi:Comprobante>')
             HelperStr.edit_pattern('</cfdi:Comprobante>', chunk, tf)
