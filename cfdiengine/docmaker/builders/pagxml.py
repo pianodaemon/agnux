@@ -288,6 +288,7 @@ class PagXml(BuilderGen):
             base_ns = "http://www.sat.gob.mx/Pagos"
             pagos = doc.createElementNS(base_ns, 'pago10:Pagos')
             pagos.setAttribute("xmlns:pagos10", base_ns)
+            pagos.setAttribute("xsi:schemaLocation", "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd")
             pagos.setAttribute("Version","1.0")
 
             for d in elements:
@@ -313,7 +314,7 @@ class PagXml(BuilderGen):
             doc.appendChild(pagos)
             content_xml = output = doc.toprettyxml()
             chunk = "{}\n{}\n{}\n{}".format('<cfdi:Complemento>',
-                                  content_xml[1:], # omits xml declaration
+                                  content_xml[22:], # omits xml declaration
                                   '</cfdi:Complemento>',
                                   '</cfdi:Comprobante>')
             HelperStr.edit_pattern('</cfdi:Comprobante>', chunk, tf)
