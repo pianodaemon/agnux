@@ -263,11 +263,15 @@ class PagXml(BuilderGen):
             """
             The sundry work arounds to apply
             """
+            def two_dec_attr(attr):
+                HelperStr.edit_pattern(
+                    '(' + attr + '=)"([0-9]*(\.[0-9]{0,1})?)"',
+                    lambda x: attr + '="%.2f"' % (float(x.group(2)),), tf
+                )
+
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
-            HelperStr.edit_pattern(
-                '(Importe=)"([0-9]*(\.[0-9]{0,1})?)"',
-                lambda x: 'Importe="%.2f"' % (float(x.group(2)),), tf
-            )
+            for a in ['ImpSaldoInsoluto', 'ImpPagado', 'ImpSaldoAnt', 'Importe']:
+                two_dec_attr(a)
 
         def wrap_up(tf, of):
             with open(of, 'w', encoding="utf-8") as a:
@@ -306,7 +310,7 @@ class PagXml(BuilderGen):
                 dr.setAttribute('ImpPagado', d['IMP_PAGADO'])
                 dr.setAttribute('MonedaDR', d['MONEDA_DR'])
                 dr.setAttribute('NumParcialidad', '1')
-                dr.setAttribute('MontoDePagoDR', 'PPD')
+                dr.setAttribute('MetodoDePagoDR', 'PPD')
                 payment.appendChild(dr)
 
                 pagos.appendChild(payment)
