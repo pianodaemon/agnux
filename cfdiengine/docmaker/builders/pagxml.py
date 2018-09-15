@@ -141,7 +141,7 @@ class PagXml(BuilderGen):
         Consulta la moneda de el pago en dbms
         """
         q = """SELECT
-            upper(moneda_p) as iso_4217,
+            'XXX'::character varying as iso_4217,
             upper(simbolo_moneda_fac) as moneda_simbolo,
             tipo_cambio_p
             FROM pagos
