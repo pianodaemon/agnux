@@ -165,7 +165,7 @@ class PagXml(BuilderGen):
             '0'::character varying AS no_identificacion,
             'Pago'::character varying AS descripcion,
             '0'::double precision as valor_unitario,
-            '0'::double precision as importe """
+            '0'::integer as importe """
         rowset = []
         for row in self.pg_query(conn, "{0}".format(q)):
             rowset.append({
@@ -175,7 +175,7 @@ class PagXml(BuilderGen):
                 'CANTIDAD': row['cantidad'],
                 'DESCRIPCION': row['descripcion'],
                 'PRECIO_UNITARIO': self.__narf(row['valor_unitario']),
-                'IMPORTE': self.__narf(row['importe']),
+                'IMPORTE': row['importe'],
             })
         return rowset
 
@@ -270,7 +270,7 @@ class PagXml(BuilderGen):
                 )
 
             HelperStr.edit_pattern('ValorUnitario="0.0"', 'ValorUnitario="0"', tf)
-            HelperStr.edit_pattern('Importe="0.0"', 'Importe="0"', tf)
+            HelperStr.edit_pattern('Importe="0.00"', 'Importe="0"', tf)
             HelperStr.edit_pattern('Cantidad="1.0"', 'Cantidad="1"', tf)
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
             HelperStr.edit_pattern('Total="0.0"', 'Total="0"', tf)
