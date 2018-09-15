@@ -270,6 +270,9 @@ class PagXml(BuilderGen):
                 )
 
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
+            HelperStr.edit_pattern('Total="0.0"', 'Total="0"', tf)
+            HelperStr.edit_pattern('SubTotal="0.0"', 'SubTotal="0"', tf)
+
             for a in ['ImpSaldoInsoluto', 'ImpPagado', 'ImpSaldoAnt', 'Importe']:
                 two_dec_attr(a)
 
