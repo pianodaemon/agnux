@@ -161,7 +161,7 @@ class PagXml(BuilderGen):
         q = """SELECT '84111506'::character varying AS clave_prod,
             'ACT'::character varying AS clave_unidad,
             'ACT'::character varying AS unidad,
-            '1'::double precision AS cantidad,
+            '1'::integer AS cantidad,
             '0'::character varying AS no_identificacion,
             'Pago'::character varying AS descripcion,
             '0'::double precision as valor_unitario,
@@ -269,7 +269,13 @@ class PagXml(BuilderGen):
                     lambda x: attr + '="%.2f"' % (float(x.group(2)),), tf
                 )
 
+            HelperStr.edit_pattern('ValorUnitario="1.0"', 'ValorUnitario="1"', tf)
+            HelperStr.edit_pattern('Importe="1.0"', 'Importe="1"', tf)
+            HelperStr.edit_pattern('Cantidad="1.0"', 'Cantidad="1"', tf)
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
+            HelperStr.edit_pattern('Total="0.0"', 'Total="0"', tf)
+            HelperStr.edit_pattern('SubTotal="0.0"', 'SubTotal="0"', tf)
+
             for a in ['ImpSaldoInsoluto', 'ImpPagado', 'ImpSaldoAnt', 'Importe']:
                 two_dec_attr(a)
 
