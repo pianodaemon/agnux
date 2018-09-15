@@ -269,8 +269,8 @@ class PagXml(BuilderGen):
                     lambda x: attr + '="%.2f"' % (float(x.group(2)),), tf
                 )
 
-            HelperStr.edit_pattern('ValorUnitario="1.0"', 'ValorUnitario="1"', tf)
-            HelperStr.edit_pattern('Importe="1.0"', 'Importe="1"', tf)
+            HelperStr.edit_pattern('ValorUnitario="0.0"', 'ValorUnitario="0"', tf)
+            HelperStr.edit_pattern('Importe="0.0"', 'Importe="0"', tf)
             HelperStr.edit_pattern('Cantidad="1.0"', 'Cantidad="1"', tf)
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
             HelperStr.edit_pattern('Total="0.0"', 'Total="0"', tf)
@@ -370,7 +370,6 @@ class PagXml(BuilderGen):
                 ClaveProdServ=i['PRODSERV'],
                 Descripcion=i['DESCRIPCION'],
                 ValorUnitario=i['PRECIO_UNITARIO'],
-                NoIdentificacion=i['SKU'],  # optional
                 Importe=i['IMPORTE']
         ))
 
