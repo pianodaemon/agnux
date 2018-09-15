@@ -355,11 +355,6 @@ class PagXml(BuilderGen):
         c.TipoDeComprobante = 'P'
         c.Total = '0'
         c.SubTotal = '0'
-        if dat['MONEDA']['ISO_4217'] == 'MXN':
-            c.TipoCambio = 1
-        else:
-            # optional (requerido en ciertos casos)
-            c.TipoCambio = truncate(dat['MONEDA']['TIPO_DE_CAMBIO'], self.__NDECIMALS)
         c.Moneda = dat['MONEDA']['ISO_4217']
 
         c.Conceptos = pyxb.BIND()
