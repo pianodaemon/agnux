@@ -270,13 +270,13 @@ class PagXml(BuilderGen):
                 )
 
             HelperStr.edit_pattern('ValorUnitario="0.0"', 'ValorUnitario="0"', tf)
-            HelperStr.edit_pattern('Importe="0.00"', 'Importe="0"', tf)
+            HelperStr.edit_pattern('Importe="0(\.0{1})"', 'Importe="0"', tf)
             HelperStr.edit_pattern('Cantidad="1.0"', 'Cantidad="1"', tf)
             HelperStr.edit_pattern('TipoCambio="1.0"', 'TipoCambio="1"', tf)
             HelperStr.edit_pattern('Total="0.0"', 'Total="0"', tf)
             HelperStr.edit_pattern('SubTotal="0.0"', 'SubTotal="0"', tf)
 
-            for a in ['ImpSaldoInsoluto', 'ImpPagado', 'ImpSaldoAnt', 'Importe']:
+            for a in ['ImpSaldoInsoluto', 'ImpPagado', 'ImpSaldoAnt']:
                 two_dec_attr(a)
 
         def wrap_up(tf, of):
@@ -297,7 +297,7 @@ class PagXml(BuilderGen):
             doc = xml.dom.minidom.Document()
             base_ns = "http://www.sat.gob.mx/Pagos"
             pagos = doc.createElementNS(base_ns, 'pago10:Pagos')
-            pagos.setAttribute("xmlns:pagos10", base_ns)
+            pagos.setAttribute("xmlns:pago10", base_ns)
             pagos.setAttribute("xsi:schemaLocation", "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd")
             pagos.setAttribute("Version","1.0")
 
