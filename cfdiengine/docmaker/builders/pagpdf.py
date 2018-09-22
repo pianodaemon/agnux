@@ -106,6 +106,7 @@ class PagPdf(BuilderGen):
     def data_rel(self, dat):
         os.remove(dat['QRCODE'])
 
+
     def __outline_story(self, dat):
         """In this handler should be conform the story"""
         story = []
@@ -120,7 +121,9 @@ class PagPdf(BuilderGen):
 
 
 
-
+        # Items story segment
+        story.append(self.__items_section(dat))
+        story.append(Spacer(1, 0.4 * cm))
 
 
 
@@ -136,6 +139,88 @@ class PagPdf(BuilderGen):
         story.append(Spacer(1, 0.6 * cm))
 
         return story
+
+
+    def __items_section(self, dat):
+        add_currency_simbol = lambda c: '${0:>40}'.format(c)
+
+        st = ParagraphStyle(
+            name='info',
+            fontName='Helvetica',
+            fontSize=7,
+            leading=8
+        )
+        header_concepts = (
+            'CLAVE', 'DESCRIPCIÓN',
+            'UNIDAD', 'CANTIDAD',
+            'P. UNITARIO', 'IMPORTE'
+        )
+
+        cont_concepts = []
+        for i in dat['XML_PARSED']['ARTIFACTS']:
+            row = [
+                i['CLAVEPRODSERV'],
+                Paragraph(i['DESCRIPCION'], st),
+                i['CLAVEUNIDAD'].upper(),
+                strtricks.HelperStr.format_currency(i['CANTIDAD']),
+                add_currency_simbol(strtricks.HelperStr.format_currency(i['VALORUNITARIO'])),
+                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPORTE']))
+            ]
+            cont_concepts.append(row)
+
+        cont = [header_concepts] + cont_concepts
+
+        table = Table(cont,
+            [
+                2.2 * cm,
+                5.6 * cm,
+                2.3 * cm,
+                2.3 * cm,
+                3.8 * cm,
+                3.8 * cm
+            ]
+        )
+
+        table.setStyle( TableStyle([
+            #Body and header look and feel (common)
+            ('ALIGN', (0,0),(-1,0), 'CENTER'),
+            ('VALIGN', (0,0),(-1,-1), 'TOP'),
+            ('BOX', (0, 0), (-1, 0), 0.25, colors.black),
+            ('BACKGROUND', (0,0),(-1,0), colors.black),
+            ('TEXTCOLOR', (0,0),(-1,0), colors.white),
+            ('FONT', (0, 0), (-1, -1), 'Helvetica', 7),
+            ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold', 7),
+            ('ROWBACKGROUNDS', (0, 1),(-1, -1), [colors.white, colors.aliceblue]),
+            ('ALIGN', (0, 1),(1, -1), 'LEFT'),
+            ('ALIGN', (2, 0),(2, -1), 'CENTER'),
+            ('ALIGN', (3, 1),(-1, -1), 'RIGHT'),
+
+            #Clave column look and feel (specific)
+            ('BOX', (0, 1), (0, -1), 0.25, colors.black),
+
+            #Description column look and feel (specific)
+            ('BOX', (1, 1), (1, -1), 0.25, colors.black),
+
+            #Unit column look and feel (specific)
+            ('BOX', (2, 1), (2, -1), 0.25, colors.black),
+
+            #Amount column look and feel (specific)
+            ('BOX', (3, 1),(3, -1), 0.25, colors.black),
+
+            #Amount column look and feel (specific)
+            ('BOX', (4, 1),(4, -1), 0.25, colors.black),
+
+            #Amount column look and feel (specific)
+            ('BOX', (5, 1),(5, -1), 0.25, colors.black),
+
+            #Amount column look and feel (specific)
+            ('BOX', (6, 1),(6, -1), 0.25, colors.black),
+
+            #Amount column look and feel (specific)
+            ('BOX', (7, 1),(7, -1), 0.25, colors.black),
+        ]))
+
+        return table
 
 
     def __info_cert_section(self, dat):
