@@ -28,30 +28,6 @@ class PagPdf(BuilderGen):
 
     def data_acq(self, conn, d_rdirs, **kwargs):
 
-        def cover_xml_lacks(pag_id):
-            SQL = """
-                WHERE ="""
-            for row in self.pg_query(conn, "{0}'{1}'".format(SQL, pag_id)):
-                # Just taking first row of query result
-                return {
-                    'TEL': row['tel'],
-                    'WWW': row['www'],
-                    'CFDI_ORIGIN_PLACE': row['lugar_exp'],
-                    'INCEPTOR_REGIMEN': row['regimen'],
-                    'INCEPTOR_TOWN': row['colonia'],
-                    'INCEPTOR_SETTLEMENT': row['municipio'],
-                    'INCEPTOR_STATE': row['estado'],
-                    'INCEPTOR_STREET': row['calle'],
-                    'INCEPTOR_STREET_NUMBER': row['no'],
-                    'RECEPTOR_STREET': row['rcalle'],
-                    'RECEPTOR_STREET_NUMBER': row['rno'],
-                    'RECEPTOR_SETTLEMENT': row['rmunicipio'],
-                    'RECEPTOR_COUNTRY': row['rpais'],
-                    'RECEPTOR_STATE': row['restado'],
-                    'RECEPTOR_TOWN': row['rcolonia'],
-                    'RECEPTOR_CP': row['rcp']
-                }
-
         def fetch_info(f):
             parser = xmlreader.SaxReader()
             try:
@@ -87,7 +63,6 @@ class PagPdf(BuilderGen):
             raise DocBuilderStepError("logo image {0} not found".format(logo_filename))
 
         return {
-            'XML_LACK': cover_xml_lacks(xml_parsed['PAGO_NUMERO_OPERACION'])
             'STAMP_ORIGINAL_STR': original,
             'XML_PARSED': xml_parsed,
             'QRCODE': f_qr,
