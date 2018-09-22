@@ -87,6 +87,7 @@ class PagPdf(BuilderGen):
             raise DocBuilderStepError("logo image {0} not found".format(logo_filename))
 
         return {
+            'XML_LACK': cover_xml_lacks(xml_parsed['PAGO_NUMERO_OPERACION'])
             'STAMP_ORIGINAL_STR': original,
             'XML_PARSED': xml_parsed,
             'QRCODE': f_qr,
