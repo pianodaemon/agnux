@@ -82,8 +82,43 @@ class PagPdf(BuilderGen):
         qrcode.drawHeight = 3.2*cm
         qrcode.drawWidth = 3.2*cm
 
+        # outline story for document's sake
+        story = self.__outline_story(dat)
+
+        # setup document template
+        doc = BaseDocTemplate(output_file, pagesize=letter,
+        rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=18,)
+
+        def fp_foot(c, d):
+            c.saveState()
+            width, height = letter
+            c.setFont('Helvetica', 7)
+            c.drawCentredString(width / 2.0, (1.00 * cm), dat['FOOTER_ABOUT'])
+            c.restoreState()
+
+        bill_frame = Frame(
+            doc.leftMargin, doc.bottomMargin, doc.width, doc.height,
+            id='bill_frame'
+        )
+
+        doc.addPageTemplates(
+            [
+                PageTemplate(id='biil_page', frames=[bill_frame], onPage=fp_foot),
+            ]
+        )
+
+        # apply story to document
+        doc.build(story, canvasmaker=NumberedCanvas)
         return
 
 
     def data_rel(self, dat):
         os.remove(dat['QRCODE'])
+
+    def __outline_story(self, dat):
+        """In this handler should be conform the story"""
+        story = []
+
+        # Gerardo should start off from here
+
+        return story
