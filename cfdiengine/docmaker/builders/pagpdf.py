@@ -121,7 +121,9 @@ class PagPdf(BuilderGen):
 
 
 
-
+        # Items story segment
+        story.append(self.__items_section(dat))
+        story.append(Spacer(1, 0.4 * cm))
 
 
 
@@ -149,9 +151,9 @@ class PagPdf(BuilderGen):
             leading=8
         )
         header_concepts = (
-            dat['CAP_LOADED']['TL_ART_SKU'], dat['CAP_LOADED']['TL_ART_DES'],
-            dat['CAP_LOADED']['TL_ART_UNIT'], dat['CAP_LOADED']['TL_ART_QUAN'],
-            dat['CAP_LOADED']['TL_ART_UP'], dat['CAP_LOADED']['TL_ART_AMNT']
+            'CLAVE', 'DESCRIPCIÓN',
+            'UNIDAD', 'CANTIDAD',
+            'P. UNITARIO', 'IMPORTE'
         )
 
         cont_concepts = []
