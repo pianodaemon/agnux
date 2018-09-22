@@ -35,8 +35,21 @@ class PagPdf(BuilderGen):
             except xml.sax.SAXParseException as e:
                 raise DocBuilderStepError("cfdi xml could not be parsed : {}".format(e))
             except Exception as e:
+                raise DocBuilderStepError("xsl could not be applied : {}".format(e))
 
-        return { 'BLA1': "I DO NOT KNOW", "BLA2": 'WHATEVER'}
+        xml = kwargs.get('xml', None)
+        if xml is None:
+            raise DocBuilderStepError("xml not found")
+        f_xml = os.path.join(d_rdirs['cfdi_output'], rfc, xml)
+        if not os.path.isfile(f_xml):
+            raise DocBuilderStepError("cfdi xml not found")
+
+        xml_parsed, original = fetch_info(f_xml)
+
+        return {
+            'STAMP_ORIGINAL_STR': original,
+            'XML_PARSED': xml_parsed,
+        }
 
     def format_wrt(self, output_file, dat):
         self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
