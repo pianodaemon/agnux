@@ -27,10 +27,20 @@ class PagPdf(BuilderGen):
         super().__init__(logger)
 
     def data_acq(self, conn, d_rdirs, **kwargs):
-        pass
+
+        def fetch_info(f):
+            parser = xmlreader.SaxReader()
+            try:
+                return parser(f)
+            except xml.sax.SAXParseException as e:
+                raise DocBuilderStepError("cfdi xml could not be parsed : {}".format(e))
+            except Exception as e:
+
+        return { 'BLA1': "I DO NOT KNOW", "BLA2": 'WHATEVER'}
 
     def format_wrt(self, output_file, dat):
         self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
+        return
 
 
     def data_rel(self, dat):
