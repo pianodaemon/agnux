@@ -72,6 +72,16 @@ class PagPdf(BuilderGen):
 
     def format_wrt(self, output_file, dat):
         self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
+
+        # load on memory image instances
+        logo = Image(dat['LOGO'])
+        logo.drawHeight = 3.8*cm
+        logo.drawWidth = 5.2*cm
+
+        qrcode = Image(dat['QRCODE'])
+        qrcode.drawHeight = 3.2*cm
+        qrcode.drawWidth = 3.2*cm
+
         return
 
 
