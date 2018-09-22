@@ -37,6 +37,10 @@ class PagPdf(BuilderGen):
             except Exception as e:
                 raise DocBuilderStepError("xsl could not be applied : {}".format(e))
 
+        rfc = kwargs.get('rfc', None)
+        if rfc is None:
+            raise DocBuilderStepError("rfc not found")
+
         xml = kwargs.get('xml', None)
         if xml is None:
             raise DocBuilderStepError("xml not found")
@@ -53,10 +57,16 @@ class PagPdf(BuilderGen):
                            xml_parsed['CFDI_TOTAL'],
                            xml_parsed['CFD_SEAL'][-8:])
 
+        logo_filename = os.path.join(d_rdirs['images'],
+                                     "{}_logo.png".format(rfc))
+        if not os.path.isfile(logo_filename):
+            raise DocBuilderStepError("logo image {0} not found".format(logo_filename))
+
         return {
             'STAMP_ORIGINAL_STR': original,
             'XML_PARSED': xml_parsed,
             'QRCODE': f_qr,
+            'LOGO': logo_filename,
         }
 
     def format_wrt(self, output_file, dat):
