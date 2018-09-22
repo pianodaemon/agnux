@@ -46,9 +46,17 @@ class PagPdf(BuilderGen):
 
         xml_parsed, original = fetch_info(f_xml)
 
+        f_qr = qrcode_cfdi(self.__VERIFICATION_URL,
+                           xml_parsed['UUID'],
+                           xml_parsed['INCEPTOR_RFC'],
+                           xml_parsed['RECEPTOR_RFC'],
+                           xml_parsed['CFDI_TOTAL'],
+                           xml_parsed['CFD_SEAL'][-8:])
+
         return {
             'STAMP_ORIGINAL_STR': original,
             'XML_PARSED': xml_parsed,
+            'QRCODE': f_qr,
         }
 
     def format_wrt(self, output_file, dat):
@@ -57,4 +65,4 @@ class PagPdf(BuilderGen):
 
 
     def data_rel(self, dat):
-        pass
+        os.remove(dat['QRCODE'])
