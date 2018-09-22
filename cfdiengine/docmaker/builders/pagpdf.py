@@ -73,15 +73,6 @@ class PagPdf(BuilderGen):
     def format_wrt(self, output_file, dat):
         self.logger.debug('dumping contents of dat: {}'.format(repr(dat)))
 
-        # load on memory image instances
-        logo = Image(dat['LOGO'])
-        logo.drawHeight = 3.8*cm
-        logo.drawWidth = 5.2*cm
-
-        qrcode = Image(dat['QRCODE'])
-        qrcode.drawHeight = 3.2*cm
-        qrcode.drawWidth = 3.2*cm
-
         # outline story for document's sake
         story = self.__outline_story(dat)
 
@@ -119,6 +110,11 @@ class PagPdf(BuilderGen):
         """In this handler should be conform the story"""
         story = []
 
+        # load on memory image instances
+        logo = Image(dat['LOGO'])
+        logo.drawHeight = 3.8*cm
+        logo.drawWidth = 5.2*cm
+
         # Gerardo should start off from here
 
 
@@ -129,6 +125,10 @@ class PagPdf(BuilderGen):
 
 
         # QR and stamping story segment
+        qrcode = Image(dat['QRCODE'])
+        qrcode.drawHeight = 3.2*cm
+        qrcode.drawWidth = 3.2*cm
+
         story.append(Spacer(1, 0.6 * cm))
         story.append(self.__info_cert_section(dat))
         story.append(self.__info_stamp_section(qrcode, dat))
