@@ -121,4 +121,143 @@ class PagPdf(BuilderGen):
 
         # Gerardo should start off from here
 
+
+
+
+
+
+
+
+        # QR and stamping story segment
+        story.append(Spacer(1, 0.6 * cm))
+        story.append(self.__info_cert_section(dat))
+        story.append(self.__info_stamp_section(qrcode, dat))
+        story.append(self.__info_cert_extra(dat))
+        story.append(Spacer(1, 0.6 * cm))
+
         return story
+
+
+    def __info_cert_section(self, dat):
+        cont = [['INFORMACIÓN DEL TIMBRE FISCAL DIGITAL']]
+        st = ParagraphStyle(name='info', fontName='Helvetica', fontSize=6.5, leading = 8)
+        table = Table(cont,
+            [
+                20.0 * cm
+            ],
+            [
+                0.50 * cm,
+            ]
+        )
+        table.setStyle( TableStyle([
+            ('BOX', (0, 0), (0, 0), 0.25, colors.black),
+            ('VALIGN', (0, 0),(0, 0), 'MIDDLE'),
+            ('ALIGN', (0, 0),(0, 0), 'LEFT'),
+            ('FONT', (0, 0), (0, 0), 'Helvetica-Bold', 7),
+            ('BACKGROUND', (0, 0),(0, 0), colors.black),
+            ('TEXTCOLOR', (0, 0),(0, 0), colors.white)
+        ]))
+
+        return table
+
+
+    def __info_cert_extra(self, dat):
+
+        cont = []
+        st = ParagraphStyle(name='info', fontName='Helvetica', fontSize=6.7, leading = 8)
+
+        time_cert_info = {
+            'label': "FECHA Y HORA DE CERTIFICACIÓN:",
+            'scn': dat['XML_PARSED']['STAMP_DATE'],
+        }
+
+        no_cert_info = {
+            'label': "NO. CERTIFICADO DEL SAT:",
+            'scn': dat['XML_PARSED']['SAT_CERT_NUMBER'],
+        }
+
+        p_ti = '''<para align=center><b>%(label)s</b> %(scn)s</para>''' % time_cert_info
+        p_no = '''<para align=center><b>%(label)s</b> %(scn)s</para>''' % no_cert_info
+
+        cont.append([Paragraph(p_no, st), '', Paragraph(p_ti, st)])
+
+        table = Table(cont,
+            [
+                8.0 * cm,
+                1.0 * cm,
+                9.0 * cm,
+            ],
+            [
+                0.50*cm,
+            ]
+        )
+        table.setStyle( TableStyle([
+            ('BOX', (0, 0), (0, 0), 0.25, colors.black),
+
+            ('VALIGN', (0, 0),(-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0),(-1, -1), 'CENTER'),
+
+            ('BOX', (2, 0), (2, 0), 0.25, colors.black)
+        ]))
+
+        return table
+
+
+    def __info_stamp_section(self, cedula, dat):
+
+        def seals():
+            c = []
+            st = ParagraphStyle(name='seal', fontName='Helvetica', fontSize=6.5, leading=8)
+            c.append(["CADENA ORIGINAL DEL TIMBRE:"])
+            c.append([Paragraph(dat['STAMP_ORIGINAL_STR'], st)])
+
+            c.append(["SELLO DIGITAL DEL EMISOR:"])
+            c.append([Paragraph(dat['XML_PARSED']['CFD_SEAL'], st)])
+
+            c.append(["SELLO DIGITAL DEL SAT:"])
+            c.append([Paragraph(dat['XML_PARSED']['SAT_SEAL'], st)])
+
+            t = Table(
+                c,
+                [
+                    15.5 * cm
+                ],
+                [
+                    0.45 * cm,
+                    1.2 * cm,
+                    0.4 * cm,
+                    0.92 * cm,
+                    0.4 * cm,
+                    1.15 * cm
+                ]
+            )
+            t.setStyle( TableStyle([
+                ('FONT', (0, 0), (0, 0), 'Helvetica-Bold', 6.5),
+                ('FONT', (0, 2), (0, 2), 'Helvetica-Bold', 6.5),
+                ('FONT', (0, 4), (0, 4), 'Helvetica-Bold', 6.5),
+            ]))
+            return t
+
+        cont = [[cedula, seals()]]
+
+        table = Table(cont,
+            [
+                4.0 * cm,
+                16.0 * cm
+            ],
+            [
+                4.5 * cm
+            ]
+        )
+
+        table.setStyle( TableStyle([
+            ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+            ('VALIGN', (0, 0),(-1, -1), 'MIDDLE'),
+            ('ALIGN', (0, 0),(0, 0), 'CENTER'),
+
+            ('ALIGN', (1, 0),(1, 0), 'LEFT'),
+            ('BACKGROUND', (1, 0),(1, 0), colors.aliceblue),
+            ('LINEBEFORE',(1,0),(1,0), 0.25, colors.black)
+        ]))
+
+        return table
