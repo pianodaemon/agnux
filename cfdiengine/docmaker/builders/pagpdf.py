@@ -396,7 +396,90 @@ class PagPdf(BuilderGen):
             t = Table([[text]], colWidths = [ 9.0 *cm])
             t.setStyle(TableStyle([('VALIGN',(-1,-1),(-1,-1),'TOP')]))
             return t
+        
+        def create_factura_table():
+            st = ParagraphStyle(
+                name='info',
+                fontName='Helvetica',
+                fontSize=7,
+                leading=8
+            )
+            serie_folio = "%s%s" % (
+                dat['XML_PARSED']['CFDI_SERIE'],
+                dat['XML_PARSED']['CFDI_FOLIO']
+            )
 
+            cont = []
+            cont.append([dat['CAP_LOADED']['TL_DOC_NAME']])
+            cont.append(['No.'])
+            cont.append([serie_folio])
+            cont.append(['FECHA Y HORA']])
+            cont.append([dat['XML_PARSED']['CFDI_DATE']])
+            cont.append(['FOLIO FISCAL'])
+            cont.append([Paragraph(dat['XML_PARSED']['UUID'], st)])
+            cont.append(['NO. CERTIFICADO'])
+            cont.append([dat['XML_PARSED']['CFDI_CERT_NUMBER']])
+
+            t = Table(cont,
+                [
+                    5 * cm,
+                ],
+                [
+                    0.40 * cm,
+                    0.37 * cm,
+                    0.37 * cm,
+                    0.38 * cm,
+                    0.38 * cm,
+                    0.38 * cm,
+                    0.70 * cm,
+                    0.38 * cm,
+                    0.38 * cm,
+                ] # rowHeights
+            )
+            t.setStyle(TableStyle([
+                # Body and header look and feel (common)
+                ('BOX', (0, 1), (-1, -1), 0.25, colors.black),
+                ('FONT', (0, 0), (0, 0), 'Helvetica-Bold', 10),
+
+                ('TEXTCOLOR', (0, 1), (-1, 1), colors.white),
+                ('FONT', (0, 1), (-1, 2), 'Helvetica-Bold', 7),
+
+                ('TEXTCOLOR', (0, 3), (-1, 3), colors.white),
+                ('FONT', (0, 3), (-1, 3), 'Helvetica-Bold', 7),
+                ('FONT', (0, 4), (-1, 4), 'Helvetica', 7),
+
+                ('TEXTCOLOR', (0, 5), (-1, 5), colors.white),
+                ('FONT', (0, 5), (-1, 5), 'Helvetica-Bold', 7),
+
+                ('FONT', (0, 7), (-1, 7), 'Helvetica-Bold', 7),
+                ('TEXTCOLOR', (0, 7), (-1, 7), colors.white),
+                ('FONT', (0, 8), (-1, 8), 'Helvetica', 7),
+
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.black, colors.white]),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('VALIGN', (0, 1), (-1, -1), 'MIDDLE'),
+            ]))
+            return t
+
+        et = create_emisor_table()
+        ft = create_factura_table()
+        cont = [[logo, et, ft]]
+        table = Table(cont,
+           [
+               5.5 * cm,
+               9.4 * cm,
+               5.5 * cm
+           ]
+        )
+        table.setStyle( TableStyle([
+            ('ALIGN', (0, 0),(0, 0), 'LEFT'),
+            ('ALIGN', (1, 0),(1, 0), 'CENTRE'),
+            ('ALIGN', (-1, 0),(-1, 0), 'RIGHT'),
+        ]))
+        return table
+        
+        
+        
 class NumberedCanvas(canvas.Canvas):
 
     def __init__(self, *args, **kwargs):
