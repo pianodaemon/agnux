@@ -118,7 +118,8 @@ class PagPdf(BuilderGen):
 
         # Gerardo should start off from here
 
-
+        story.append(self.__top_table(logo, dat))
+        story.append(Spacer(1, 0.4 * cm))
 
 
         # Items story segment
@@ -151,19 +152,19 @@ class PagPdf(BuilderGen):
             leading=8
         )
         header_concepts = (
-            'FACTURA', 'UUID FACTURA',
-            'SALDO ANTERIOR', 'IMPORTE PAGO',
-            'SALDO INSOLUTO', 'IMPORTE'
+            'CLAVE', 'DESCRIPCIÓN',
+            'UNIDAD', 'CANTIDAD',
+            'P. UNITARIO', 'IMPORTE'
         )
 
         cont_concepts = []
         for i in dat['XML_PARSED']['ARTIFACTS']:
             row = [
-                i['CLAVEPRODSERV'],
-                Paragraph(i['IDDOCUMENTO'], st),
-                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPSALDOANT'])),
-                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPPAGADO'])),
-                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPSALDOINSOLUTO'])),
+               i['CLAVEPRODSERV'],
+                Paragraph(i['DESCRIPCION'], st),
+                i['CLAVEUNIDAD'].upper(),
+                strtricks.HelperStr.format_currency(i['CANTIDAD']),
+                add_currency_simbol(strtricks.HelperStr.format_currency(i['VALORUNITARIO'])), 
                 add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPORTE']))
             ]
             cont_concepts.append(row)
@@ -347,6 +348,54 @@ class PagPdf(BuilderGen):
 
         return table
 
+    def __top_table(self, logo, dat):
+
+        def create_emisor_table():
+            st = ParagraphStyle(
+                name='info',
+                fontName='Helvetica',
+                fontSize=7,
+                leading=9.7
+            )
+            context = dict(
+                inceptor=dat['XML_PARSED']['INCEPTOR_NAME'], rfc=dat['XML_PARSED']['INCEPTOR_RFC'],
+                cp=dat['XML_PARSED']['INCEPTOR_CP'].upper(),
+                regimen=dat['XML_LACK']['INCEPTOR_REGIMEN'].upper(),fontSize='7', fontName='Helvetica'
+            )
+            text = Paragraph(
+                '''
+                <para align=center spaceb=3>
+                    <font name=%(fontName)s size=10 >
+                        <b>%(inceptor)s</b>
+                    </font>
+                    <br/>
+                    <font name=%(fontName)s size=%(fontSize)s >
+                        <b>RFC: %(rfc)s</b>
+                    </font>
+                    <br/>
+                    <font name=%(fontName)s size=%(fontSize)s >
+                        <b>DOMICILIO FISCAL</b>
+                    </font>
+                    <br/>
+                    %(street)s %(number)s %(settlement)s
+                    <br/>
+                    %(town)s, %(state)s C.P. %(cp)s
+                    <br/>
+                    TEL./FAX. %(phone)s
+                    <br/>
+                    %(www)s
+                    <br/>
+                    %(regimen)s
+                    <br/><br/>
+                    <b>LUGAR DE EXPEDICIÓN</b>
+                    <br/>
+                    %(op)s
+                </para>
+                ''' % context, st
+            )
+            t = Table([[text]], colWidths = [ 9.0 *cm])
+            t.setStyle(TableStyle([('VALIGN',(-1,-1),(-1,-1),'TOP')]))
+            return t
 
 class NumberedCanvas(canvas.Canvas):
 
