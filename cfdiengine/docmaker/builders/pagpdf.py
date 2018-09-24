@@ -413,7 +413,7 @@ class PagPdf(BuilderGen):
             cont.append([dat['CAP_LOADED']['TL_DOC_NAME']])
             cont.append(['No.'])
             cont.append([serie_folio])
-            cont.append(['FECHA Y HORA']])
+            cont.append(['FECHA Y HORA'])
             cont.append([dat['XML_PARSED']['CFDI_DATE']])
             cont.append(['FOLIO FISCAL'])
             cont.append([Paragraph(dat['XML_PARSED']['UUID'], st)])
