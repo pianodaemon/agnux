@@ -360,7 +360,7 @@ class PagPdf(BuilderGen):
             context = dict(
                 inceptor=dat['XML_PARSED']['INCEPTOR_NAME'], rfc=dat['XML_PARSED']['INCEPTOR_RFC'],
                 cp=dat['XML_PARSED']['INCEPTOR_CP'].upper(),
-                regimen=dat['XML_LACK']['INCEPTOR_REGIMEN'].upper(),fontSize='7', fontName='Helvetica'
+                regimen=dat['XML_PARSED']['INCEPTOR_REG'].upper(),fontSize='7', fontName='Helvetica'
             )
             text = Paragraph(
                 '''
