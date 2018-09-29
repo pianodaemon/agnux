@@ -136,7 +136,14 @@ def dopago(logger, pt, req):
         parser = SaxReader()
         xml_dat, _ = parser(f_xmlin)
         # Gerardo here modify database tables
-        pass
+        q = """update fac_cfds_conf_folios  set folio_actual = (folio_actual + 1)
+            FROM gral_suc AS SUC
+            LEFT JOIN fac_cfds_conf ON fac_cfds_conf.ral_suc_id = SUC.id
+            LEFT JOIN gral_usr_suc AS USR_SUC ON USR_SUC.ral_suc_id = SUC.id
+            WHERE fac_cfds_conf_folios.proposito = 'PAG'
+            AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
+            AND USR_SUC.ral_usr_id = """
+
 
     rc = __run_builder(logger, pt, tmp_file, resdir,
             'pagxml',
