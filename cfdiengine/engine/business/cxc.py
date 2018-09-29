@@ -141,7 +141,7 @@ def dopago(logger, pt, req):
     def update_consecutive_alpha(f_xmlin):
         parser = SaxReader()
         xml_dat, _ = parser(f_xmlin)
-        # Gerardo here modify database tables
+
         q = """update fac_cfds_conf_folios  set folio_actual = (folio_actual + 1)
             FROM gral_suc AS SUC
             LEFT JOIN fac_cfds_conf ON fac_cfds_conf.ral_suc_id = SUC.id
@@ -149,7 +149,11 @@ def dopago(logger, pt, req):
             WHERE fac_cfds_conf_folios.proposito = 'PAG'
             AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
             AND USR_SUC.ral_usr_id = """.format(usr_id)
-
+        try:
+            HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True)
+        except:
+            logger.error(dump_exception())
+            return ErrorCode.DBMS_SQL_ISSUES
 
     rc = __run_builder(logger, pt, tmp_file, resdir,
             'pagxml', usr_id = usr_id, pag_id = pag_id)
