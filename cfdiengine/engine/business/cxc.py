@@ -150,7 +150,7 @@ def dopago(logger, pt, req):
             AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
             AND USR_SUC.gral_usr_id = {}""".format(usr_id)
         try:
-            HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True)
+            HelperPg.onfly_update(pt.dbms.pgsql_conn, q)
         except:
             logger.error(dump_exception())
             return ErrorCode.DBMS_SQL_ISSUES
