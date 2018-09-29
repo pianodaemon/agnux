@@ -154,6 +154,7 @@ def dopago(logger, pt, req):
         except:
             logger.error(dump_exception())
             return ErrorCode.DBMS_SQL_ISSUES
+        return ErrorCode.SUCCESS
 
     rc = __run_builder(logger, pt, tmp_file, resdir,
             'pagxml', usr_id = usr_id, pag_id = pag_id)
