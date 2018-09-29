@@ -132,6 +132,12 @@ def dopago(logger, pt, req):
     tmp_dir = tempfile.gettempdir()
     tmp_file = os.path.join(tmp_dir, HelperStr.random_str())
 
+    def update_consecutive_alpha(f_xmlin):
+        parser = SaxReader()
+        xml_dat, _ = parser(f_xmlin)
+        # Gerardo here modify database tables
+        pass
+
     rc = __run_builder(logger, pt, tmp_file, resdir,
             'pagxml',
             usr_id = req.get('usr_id', None),
@@ -152,6 +158,12 @@ def dopago(logger, pt, req):
             out_dir = os.path.join(rdirs['cfdi_output'], _rfc)
             rc, signed_file = __pac_sign(logger, tmp_file, filename,
                                          out_dir, pt.tparty.pac)
+        if rc == ErrorCode.SUCCESS:
+            rc = update_consecutive_alpha(signed_file)
+            if rc == ErrorCode.SUCCESS:
+                rc = __run_builder(logger, pt,
+                    signed_file.replace('.xml', '.pdf'),
+                    resdir, 'ncrpdf', xml = signed_file, rfc = _rfc)
 
     if os.path.isfile(tmp_file):
         os.remove(tmp_file)
