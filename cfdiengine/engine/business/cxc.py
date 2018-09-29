@@ -148,7 +148,7 @@ def dopago(logger, pt, req):
             LEFT JOIN gral_usr_suc AS USR_SUC ON USR_SUC.ral_suc_id = SUC.id
             WHERE fac_cfds_conf_folios.proposito = 'PAG'
             AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
-            AND USR_SUC.ral_usr_id = """.format(usr_id)
+            AND USR_SUC.ral_usr_id = {}""".format(usr_id)
         try:
             HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True)
         except:
