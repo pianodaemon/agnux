@@ -124,6 +124,12 @@ def dopago(logger, pt, req):
     logger.info("stepping in dopago handler within {}".format(__name__))
 
     filename = req.get('filename', None)
+    usr_id = req.get('usr_id', None)
+    pag_id = req.get('pag_id', None)
+
+    if (pag_id is None) or (usr_id is None) or (filename is None):
+        return ErrorCode.REQUEST_INCOMPLETE.value
+
 
     source = ProfileReader.get_content(pt.source, ProfileReader.PNODE_UNIQUE)
     resdir = os.path.abspath(os.path.join(os.path.dirname(source), os.pardir))
@@ -142,13 +148,11 @@ def dopago(logger, pt, req):
             LEFT JOIN gral_usr_suc AS USR_SUC ON USR_SUC.ral_suc_id = SUC.id
             WHERE fac_cfds_conf_folios.proposito = 'PAG'
             AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
-            AND USR_SUC.ral_usr_id = """
+            AND USR_SUC.ral_usr_id = """.format(usr_id)
 
 
     rc = __run_builder(logger, pt, tmp_file, resdir,
-            'pagxml',
-            usr_id = req.get('usr_id', None),
-            pag_id = req.get('pag_id', None))
+            'pagxml', usr_id = usr_id, pag_id = pag_id)
 
     if rc != ErrorCode.SUCCESS:
         pass
@@ -167,10 +171,10 @@ def dopago(logger, pt, req):
                                          out_dir, pt.tparty.pac)
         if rc == ErrorCode.SUCCESS:
             rc = update_consecutive_alpha(signed_file)
-            if rc == ErrorCode.SUCCESS:
-                rc = __run_builder(logger, pt,
-                    signed_file.replace('.xml', '.pdf'),
-                    resdir, 'pagpdf', xml = signed_file, rfc = _rfc)
+#            if rc == ErrorCode.SUCCESS:
+#                rc = __run_builder(logger, pt,
+#                    signed_file.replace('.xml', '.pdf'),
+#                    resdir, 'pagpdf', xml = signed_file, rfc = _rfc)
 
     if os.path.isfile(tmp_file):
         os.remove(tmp_file)
