@@ -163,7 +163,7 @@ def dopago(logger, pt, req):
             if rc == ErrorCode.SUCCESS:
                 rc = __run_builder(logger, pt,
                     signed_file.replace('.xml', '.pdf'),
-                    resdir, 'ncrpdf', xml = signed_file, rfc = _rfc)
+                    resdir, 'pagpdf', xml = signed_file, rfc = _rfc)
 
     if os.path.isfile(tmp_file):
         os.remove(tmp_file)
