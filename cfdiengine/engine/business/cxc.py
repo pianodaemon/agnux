@@ -176,10 +176,10 @@ def dopago(logger, pt, req):
                                          out_dir, pt.tparty.pac)
         if rc == ErrorCode.SUCCESS:
             rc = update_consecutive_alpha(signed_file)
-#            if rc == ErrorCode.SUCCESS:
-#                rc = __run_builder(logger, pt,
-#                    signed_file.replace('.xml', '.pdf'),
-#                    resdir, 'pagpdf', xml = signed_file, rfc = _rfc)
+            if rc == ErrorCode.SUCCESS:
+                rc = __run_builder(logger, pt,
+                    signed_file.replace('.xml', '.pdf'),
+                    resdir, 'pagpdf', xml = signed_file, rfc = _rfc)
 
     if os.path.isfile(tmp_file):
         os.remove(tmp_file)
