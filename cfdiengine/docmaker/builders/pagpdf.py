@@ -120,8 +120,10 @@ class PagPdf(BuilderGen):
 
         story.append(self.__top_table(logo, dat))
         story.append(Spacer(1, 0.4 * cm))
+#        story.append(self.__customer_table(dat))
+        story.append(Spacer(1, 0.4 * cm))
 
-
+    
         # Items story segment
         story.append(self.__items_section(dat))
         story.append(Spacer(1, 0.4 * cm))
@@ -152,20 +154,20 @@ class PagPdf(BuilderGen):
             leading=8
         )
         header_concepts = (
-            'CLAVE', 'DESCRIPCIÓN',
-            'UNIDAD', 'CANTIDAD',
-            'P. UNITARIO', 'IMPORTE'
+            'MONEDA', 'UUID',
+            '# PARC', 'SALDO ANT',
+            'IMPORTE PAGADO', 'SALDO INSOLUTO'
         )
 
         cont_concepts = []
-        for i in dat['XML_PARSED']['ARTIFACTS']:
+        for i in dat['XML_PARSED']['DOCTOS']:
             row = [
-               i['CLAVEPRODSERV'],
-                Paragraph(i['DESCRIPCION'], st),
-                i['CLAVEUNIDAD'].upper(),
-                strtricks.HelperStr.format_currency(i['CANTIDAD']),
-                add_currency_simbol(strtricks.HelperStr.format_currency(i['VALORUNITARIO'])), 
-                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPORTE']))
+                i['MONEDADR'],
+                i['IDDOCUMENTO'],
+                i['NUMPARCIALIDAD'],
+                strtricks.HelperStr.format_currency(i['IMPSALDOANT']),
+                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPPAGADO'])),
+                add_currency_simbol(strtricks.HelperStr.format_currency(i['IMPSALDOINSOLUTO']))
             ]
             cont_concepts.append(row)
 
@@ -347,6 +349,56 @@ class PagPdf(BuilderGen):
         ]))
 
         return table
+    
+    def __customer_table(self, dat):
+
+        def customer_sec():
+            c = []
+            c.append(['CLIENTE'])
+            c.append([ dat['XML_PARSED']['RECEPTOR_NAME'].upper()])
+            c.append([ ['CLIENTE'] ])
+            c.append([ dat['XML_PARSED']['RECEPTOR_RFC'].upper() ])
+            c.append(['METODO DE PAGO'])
+            c.append([ dat['XML_PARSED']['METODO_PAGO']])
+            c.append(['USO'])
+            c.append([ dat['XML_PARSED']['RECEPTOR_USAGE']])
+            c.append(['TIPO DE CAMBIO'])
+            c.append([ dat['XML_PARSED']['METODO_PAGO']])
+
+            t = Table(
+                c,
+                [
+                    8.6 * cm   # rowWitdhs
+		            ],
+                 [0.35 * cm] * 10 # rowHeights
+            )
+            t.setStyle(TableStyle([
+                # Body and header look and feel (common)
+                ('ROWBACKGROUNDS', (0, 0), (-1, 4), [colors.aliceblue, colors.white]),
+                ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('BOX', (0, 0), (-1, -1), 0.25, colors.black),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+                ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold', 7),
+                ('FONT', (0, 1), (-1, 1), 'Helvetica', 7),
+                ('FONT', (0, 2), (-1, 2), 'Helvetica-Bold', 7),
+                ('FONT', (0, 3), (-1, 3), 'Helvetica', 7),
+                ('FONT', (0, 4), (-1, 4), 'Helvetica-Bold', 7),
+                ('FONT', (0, 5), (-1, 9), 'Helvetica', 7),
+            ]))
+            return t
+
+        table = Table([[customer_sec()]], [
+            8.8 * cm,
+            12 * cm
+        ])
+        table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (0, 0), 'LEFT'),
+            ('ALIGN', (-1, -1), (-1, -1), 'RIGHT'),
+        ]))
+        return table
+
+
 
     def __top_table(self, logo, dat):
 
@@ -360,12 +412,15 @@ class PagPdf(BuilderGen):
             context = dict(
                 inceptor=dat['XML_PARSED']['INCEPTOR_NAME'], rfc=dat['XML_PARSED']['INCEPTOR_RFC'],
                 cp=dat['XML_PARSED']['INCEPTOR_CP'].upper(),
-                regimen=dat['XML_PARSED']['INCEPTOR_REG'].upper(),fontSize='7', fontName='Helvetica'
+                regimen=dat['XML_PARSED']['INCEPTOR_REG'].upper(),
+                receptor=dat['XML_PARSED']['RECEPTOR_NAME'].upper(),
+                receptorrfc=dat['XML_PARSED']['RECEPTOR_RFC'].upper(),
+                uso=dat['XML_PARSED']['RECEPTOR_USAGE'].upper(),fontSize='7', fontName='Helvetica'
             )
             text = Paragraph(
                 '''
                 <para align=center spaceb=3>
-                    <font name=%(fontName)s size=10 >
+                    <font name=%(fontName)s size=7 >
                         <b>%(inceptor)s</b>
                     </font>
                     <br/>
@@ -374,22 +429,18 @@ class PagPdf(BuilderGen):
                     </font>
                     <br/>
                     <font name=%(fontName)s size=%(fontSize)s >
-                        <b>DOMICILIO FISCAL</b>
+                        <b>REGIMEN: %(regimen)s</b>
                     </font>
                     <br/>
-                    %(street)s %(number)s %(settlement)s
-                    <br/>
-                    %(town)s, %(state)s C.P. %(cp)s
-                    <br/>
-                    TEL./FAX. %(phone)s
-                    <br/>
-                    %(www)s
-                    <br/>
-                    %(regimen)s
+                    LUGAR DE EXPEDICIÓN: %(cp)s
                     <br/><br/>
-                    <b>LUGAR DE EXPEDICIÓN</b>
+                    RECEPTOR: %(receptor)s
                     <br/>
-                    %(op)s
+                    RFC RECEPTOR: %(receptorrfc)s
+                    <br/>
+                    USO DEL CFDI: %(uso)s
+                    <br/>
+                    TIPO DE COMPROBANTE P PAGO
                 </para>
                 ''' % context, st
             )
@@ -410,7 +461,7 @@ class PagPdf(BuilderGen):
             )
 
             cont = []
-            cont.append([dat['CAP_LOADED']['TL_DOC_NAME']])
+            cont.append(['COMPLEMENTO DE PAGO'])
             cont.append(['No.'])
             cont.append([serie_folio])
             cont.append(['FECHA Y HORA'])
@@ -478,8 +529,7 @@ class PagPdf(BuilderGen):
         ]))
         return table
         
-        
-        
+
 class NumberedCanvas(canvas.Canvas):
 
     def __init__(self, *args, **kwargs):
