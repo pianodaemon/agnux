@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.controllers;
 
-import com.agnux.cfd.v2.ArchivoInformeMensual;
+
+
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.cfd.v2.BeanFromCfdXml;
 import com.agnux.cfd.v2.CryptoEngine;
@@ -484,93 +481,7 @@ public class FacturasController {
         return jsonretorno;
     }
     
-    
-    
-    
-    
-    
-    
-    //Reporte Mensual SAT (Genera txt)
-    @RequestMapping(value = "/get_genera_txt_reporte_mensual_sat/{month}/{year}/{iu}/out.json", method = RequestMethod.GET ) 
-    public ModelAndView get_genera_txt_reporte_mensual_sat(
-            @PathVariable("year") String year, 
-            @PathVariable("month") String month,
-            @PathVariable("iu") String id_user,
-            HttpServletRequest request, 
-            HttpServletResponse response, 
-            Model model) throws ServletException, IOException, URISyntaxException {
-        
-        HashMap<String, String> userDat = new HashMap<String, String>();
-        
-        //decodificar id de usuario
-        Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-        //System.out.println("id_usuario: "+id_usuario);
-        
-        userDat = this.getHomeDao().getUserById(id_usuario);
-        Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
-        
-        ArchivoInformeMensual aim = new ArchivoInformeMensual();
-        
-        String nombre_txt = aim.generaNombreArchivoInformeMensual("1",this.getGralDao().getRfcEmpresaEmisora(id_empresa),month,year,"txt");
-        String fileout = this.getGralDao().getTmpDir() + nombre_txt;
-         File toFile = new File(fileout);
-    	if (toFile.exists()) {
-            //si el archivo ya esxiste, es eliminado
-            toFile.delete();
-        }
-        
-        
-        ArrayList<HashMap<String, Object>> valor_emitidos = this.getFacdao().getComprobantesActividadPorMes(year, month,id_empresa);
-        
-        for(HashMap<String,Object> iteradorX : valor_emitidos){
-            String renglon = aim.generarRegistroPorRenglonParaArchivoInformeMensual(
-                    String.valueOf(iteradorX.get("rfc_cliente")),
-                    String.valueOf(iteradorX.get("serie")),
-                    String.valueOf(iteradorX.get("folio_del_comprobante_fiscal")),
-                    String.valueOf(iteradorX.get("numero_de_aprobacion")),
-                    String.valueOf(iteradorX.get("momento_expedicion")),
-                    String.valueOf(iteradorX.get("monto_de_la_operacion")),
-                    String.valueOf(iteradorX.get("monto_del_impuesto")),
-                    String.valueOf(iteradorX.get("estado_del_comprobante")),
-                    String.valueOf(iteradorX.get("efecto_de_comprobante")),
-                    String.valueOf(iteradorX.get("pedimento")),
-                    String.valueOf(iteradorX.get("fecha_de_pedimento")),
-                    String.valueOf(iteradorX.get("aduana")),
-                    String.valueOf(iteradorX.get("anoaprovacion")));
-            
-            if(!renglon.isEmpty()){
-                //FileHelper.addText2File(System.getProperty("java.io.tmpdir")+ "/" + nombre_txt,renglon);
-                FileHelper.addText2File(this.getGralDao().getTmpDir() + nombre_txt,renglon);
-            }
-	}
-        
-        //String fileout = System.getProperty("java.io.tmpdir")+ "/" + nombre_txt;
-        
-        System.out.println("Recuperando archivo: " + fileout);
-        
-        File file = new File(fileout);
-        if (file.exists()==false){
-            System.out.println("No hay facturas en este mes");
-            FileHelper.addText2File(this.getGralDao().getTmpDir() + nombre_txt,"");
-        }
-        
-        int size = (int) file.length(); // Tamaño del archivo
-        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-        response.setBufferSize(size);
-        response.setContentLength(size);
-        response.setContentType("text/plain");
-        response.setHeader("Content-Disposition","attachment; filename=\"" + file.getCanonicalPath() +"\"");
-        FileCopyUtils.copy(bis, response.getOutputStream());
-        response.flushBuffer();
-        
-        return null;
-    }
-    
-    
-    
-    
-    
-    
+
     //obtiene los tipos de cancelacion
     @RequestMapping(method = RequestMethod.POST, value="/getVerificaArchivoGenerado.json")
     public @ResponseBody HashMap<String,String> getVerificaArchivoGeneradoJson(

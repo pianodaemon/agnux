@@ -9,10 +9,6 @@ import javax.security.cert.X509Certificate;
 import org.apache.commons.ssl.PKCS8Key;
 
 
-/**
- *
- * @author agnux
- */
 public class CryptoEngine {
 
     public static String sign(String filename, String password , String cadenaoriginal) {
@@ -54,23 +50,7 @@ public class CryptoEngine {
         
         return valor_retorno;
     }
-/*
-    public static String encodeCertToBase64(String certifle){
-        char[] psB64Certificate = null;
-        FileInputStream fis;
-        try {
-            fis = new FileInputStream(certifle); // Se maneja la excepcion
-            X509Certificate cert = X509Certificate.getInstance(fis);
-            byte[] buf = cert.getEncoded();
-            psB64Certificate = Base64Coder.encode(buf);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
-
-        return new String(psB64Certificate);
-    }
-*/
     private static byte[] getBytesFromInputStream(InputStream is) {
         int totalBytes = 714;
         byte[] buffer = null;
