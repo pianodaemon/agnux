@@ -138,6 +138,16 @@ def dopago(logger, pt, req):
     tmp_dir = tempfile.gettempdir()
     tmp_file = os.path.join(tmp_dir, HelperStr.random_str())
 
+    def update_filename():
+        q = """UPDATE erp_pagos set aux_no_fac = '{}'
+            WHERE erp_pagos.numero_transaccion = {}""".format(filename.replace('.xml', ''), pag_id)
+        try:
+            HelperPg.onfly_update(pt.dbms.pgsql_conn, q)
+        except:
+            logger.error(dump_exception())
+            return ErrorCode.DBMS_SQL_ISSUES
+        return ErrorCode.SUCCESS
+
     def update_consecutive_alpha(f_xmlin):
         parser = SaxReader()
         xml_dat, _ = parser(f_xmlin)
@@ -174,6 +184,9 @@ def dopago(logger, pt, req):
             out_dir = os.path.join(rdirs['cfdi_output'], _rfc)
             rc, signed_file = __pac_sign(logger, tmp_file, filename,
                                          out_dir, pt.tparty.pac)
+        if rc == ErrorCode.SUCCESS:
+            rc = update_filename()
+
         if rc == ErrorCode.SUCCESS:
             rc = update_consecutive_alpha(signed_file)
             if rc == ErrorCode.SUCCESS:
@@ -218,20 +231,6 @@ def undofacturar(logger, pt, req):
         reason,       #  _reason
         mode          #  _mode
     )
-
-    def run_store(q):
-        logger.debug("Performing query: {}".format(q))
-        res = HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True)
-
-        # For this case we are just expecting one row
-        if len(res) != 1:
-            raise Exception('unexpected result regarding execution of store')
-        return res
-
-    def check_result(r):
-        rcode, rmsg = r.pop()
-        if rcode != 0:
-            raise Exception(rmsg)
 
     def get_xml_name():
         q = """select ref_id as filename
