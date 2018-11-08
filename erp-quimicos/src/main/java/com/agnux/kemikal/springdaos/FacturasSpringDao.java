@@ -407,40 +407,7 @@ public class FacturasSpringDao implements FacturasInterfaceDao{
         );
         return hm_grid;
     }
-    
-    
-    
-    //Obtener datos para la Adenda
-    @Override
-    public ArrayList<HashMap<String, Object>> getFactura_DatosAdenda(Integer id_factura) {
-        String sql_query = "SELECT * FROM fac_docs_adenda WHERE fac_docs_id="+id_factura+";";
-        
-        //System.out.println("Obtiene datos grid prefactura: "+sql_query);
-        ArrayList<HashMap<String, Object>> hm_grid = (ArrayList<HashMap<String, Object>>) this.jdbcTemplate.query(
-            sql_query, 
-            new Object[]{}, new RowMapper() {
-                @Override
-                public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    HashMap<String, Object> row = new HashMap<String, Object>();
-                    row.put("id_adenda",rs.getInt("id"));
-                    row.put("generado",rs.getString("generado"));
-                    row.put("valor1",rs.getString("valor1"));
-                    row.put("valor2",rs.getString("valor2"));
-                    row.put("valor3",rs.getString("valor3").toLowerCase());
-                    row.put("valor4",rs.getString("valor4"));
-                    row.put("valor5",rs.getString("valor5"));
-                    row.put("valor6",rs.getString("valor6"));
-                    row.put("valor7",rs.getString("valor7"));
-                    row.put("valor8",rs.getString("valor8"));
-                    return row;
-                }
-            }
-        );
-        return hm_grid;
-    }
-    
-    
-    
+
     //obtiene todas la monedas
     @Override
     public ArrayList<HashMap<String, Object>> getFactura_Monedas() {

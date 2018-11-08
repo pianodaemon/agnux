@@ -222,7 +222,6 @@ public class FacConsultasController {
         HashMap<String, Object> tc = new HashMap<String, Object>();
         HashMap<String, String> userDat = new HashMap<String, String>();
         HashMap<String, String> parametros = new HashMap<String, String>();
-        ArrayList<HashMap<String, Object>> datosAdenda = new ArrayList<HashMap<String, Object>>();
         
         //Decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
@@ -242,39 +241,11 @@ public class FacConsultasController {
             if (parametros.get("incluye_adenda").equals("true")){
                 //Verificar si el cliente tiene asignada una adenda
                 if(Integer.parseInt(String.valueOf(datosFactura.get(0).get("t_adenda_id")))>0){
-                    
-                    //Obtener datos de la Adenda
-                    datosAdenda = this.getFacdao().getFactura_DatosAdenda(Integer.valueOf(id_factura));
-                    
                     incluirAdenda=true;
                 }
             }
         }
         
-        if(incluirAdenda){
-            if(datosAdenda.size()<=0){
-                /*
-                Si es nuevo, aun no se ha ingresado datos para la addenda.
-                Hay que cargar los datos conocidos que debe llevar la addenda
-                */
-                HashMap<String, Object> row = new HashMap<String, Object>();
-                row.put("id_adenda",0);
-                row.put("generado","false");
-                
-                if(Integer.parseInt(String.valueOf(datosFactura.get(0).get("t_adenda_id")))==3){
-                    row.put("valor1",datosFactura.get(0).get("orden_compra"));//Orden Compra
-                    row.put("valor2",this.getGralDao().geteMailPurchasingEmpresaEmisora(id_empresa));//Email-Emisor
-                    row.put("valor3",datosFactura.get(0).get("moneda_4217"));//Moneda
-                    row.put("valor4",(datosFactura.get(0).get("moneda_4217").equals("MXN"))?"1":datosFactura.get(0).get("tipo_cambio"));//Tipo de Cambio
-                    row.put("valor5",datosFactura.get(0).get("subtotal"));//Subtotal factura
-                    row.put("valor6",datosFactura.get(0).get("total"));//Total Factura
-                    row.put("valor7","");
-                    row.put("valor8","");
-                }
-                
-                datosAdenda.add(row);
-            }
-        }
         
         valorIva= this.getFacdao().getValoriva(id_sucursal);
         tc.put("tipo_cambio", StringHelper.roundDouble(this.getFacdao().getTipoCambioActual(), 4)) ;
@@ -282,7 +253,6 @@ public class FacConsultasController {
         
         jsonretorno.put("datosFactura", datosFactura);
         jsonretorno.put("datosGrid", datosGrid);
-        jsonretorno.put("datosAdenda", datosAdenda);
         jsonretorno.put("Addenda", incluirAdenda);
         jsonretorno.put("iva", valorIva);
         jsonretorno.put("Tc", tipoCambioActual);
