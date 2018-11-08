@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package com.agnux.kemikal.controllers;
+
+
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.cfdi.LegacyRequest;
 import com.agnux.common.helpers.FileHelper;
@@ -49,10 +46,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-/**
- *
- * @author agnux
- */
+
 @Controller
 @SessionAttributes({"user"})
 @RequestMapping("/carteras/")
@@ -67,38 +61,26 @@ public class CarterasController {
     @Autowired
     @Qualifier("daoGral")
     private GralInterfaceDao gralDao;
-    
+
     @Autowired
     @Qualifier("daoCxc")
     private CxcInterfaceDao cxcDao;
-    
-    
-    public HomeInterfaceDao getHomeDao() {
-        return HomeDao;
-    }
-    
 
-    public GralInterfaceDao getGralDao() {
-        return gralDao;
-    }
+    public HomeInterfaceDao getHomeDao() { return HomeDao; }
 
-    public void setGralDao(GralInterfaceDao gralDao) {
-        this.gralDao = gralDao;
-    }
+    public GralInterfaceDao getGralDao() { return gralDao; }
 
+    public void setGralDao(GralInterfaceDao gralDao) { this.gralDao = gralDao; }
 
-    public CxcInterfaceDao getCxcDao() {
-        return cxcDao;
-    }
-    
-    
+    public CxcInterfaceDao getCxcDao() { return cxcDao; }
+
     @RequestMapping(value="/startup.agnux")
     public ModelAndView startUp(HttpServletRequest request, HttpServletResponse response, @ModelAttribute("user") UserSessionData user)
             throws ServletException, IOException {
-        
+
         log.log(Level.INFO, "Ejecutando starUp de {0}", CarterasController.class.getName());
         LinkedHashMap<String,String> infoConstruccionTabla = new LinkedHashMap<String,String>();
-        
+
         infoConstruccionTabla.put("id", "Acciones:70");
         infoConstruccionTabla.put("numero_transaccion", "No.&nbsp;Transacci&oacute;n:110");
         infoConstruccionTabla.put("total", "Monto pago:100");
@@ -107,9 +89,9 @@ public class CarterasController {
         infoConstruccionTabla.put("moneda", "Moneda:60");
         infoConstruccionTabla.put("fecha_deposito", "Fecha&nbsp;Dep&oacute;sito:100");
         infoConstruccionTabla.put("estado", "Estado:90");
-        
+
         ModelAndView x = new ModelAndView("carteras/startup", "title", "Carteras");
-        
+
         x = x.addObject("layoutheader", resource.getLayoutheader());
         x = x.addObject("layoutmenu", resource.getLayoutmenu());
         x = x.addObject("layoutfooter", resource.getLayoutfooter());
@@ -118,20 +100,17 @@ public class CarterasController {
         x = x.addObject("username", user.getUserName());
         x = x.addObject("empresa", user.getRazonSocialEmpresa());
         x = x.addObject("sucursal", user.getSucursal());
-        
+
         String userId = String.valueOf(user.getUserId());
-        
+
         String codificado = Base64Coder.encodeString(userId);
-        
+
         //id de usuario codificado
         x = x.addObject("iu", codificado);
-        
+
         return x;
     }
-    
 
-    
-    
     //obtiene listado de pagos para el grid
     @RequestMapping(value="/getPagos.json", method = RequestMethod.POST)
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getPagosJson(
@@ -144,66 +123,51 @@ public class CarterasController {
            @RequestParam(value="cadena_busqueda", required=true) String cadena_busqueda,
            @RequestParam(value="iu", required=true) String id_user_cod,
            Model modcel) {
-           
-        
+
         HashMap<String,ArrayList<HashMap<String, Object>>> jsonretorno = new HashMap<String,ArrayList<HashMap<String, Object>>>();
         HashMap<String,String> has_busqueda = StringHelper.convert2hash(StringHelper.ascii2string(cadena_busqueda));
-        
+
         //aplicativo de carteras
         Integer app_selected = 14;
-        
+
         //decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user_cod));
-        //System.out.println("id_usuario: "+id_usuario);
-        
+
         //variables para el buscador
         String num_transaccion = StringHelper.isNullString(String.valueOf(has_busqueda.get("num_transaccion")));
         String factura = "%"+StringHelper.isNullString(String.valueOf(has_busqueda.get("factura")))+"%";
         String cliente = "%"+StringHelper.isNullString(String.valueOf(has_busqueda.get("cliente")))+"%";
         String fecha_inicial = ""+StringHelper.isNullString(String.valueOf(has_busqueda.get("fecha_inicial")))+"";
         String fecha_final = ""+StringHelper.isNullString(String.valueOf(has_busqueda.get("fecha_final")))+"";
-        
+
         String data_string = app_selected+"___"+id_usuario+"___"+num_transaccion+"___"+factura+"___"+cliente+"___"+fecha_inicial+"___"+fecha_final;
-        
+
         //obtiene total de registros en base de datos, con los parametros de busqueda
         int total_items = this.getCxcDao().countAll(data_string);
-        
+
         //calcula el total de paginas
         int total_pags = resource.calculaTotalPag(total_items,items_por_pag);
-        
+
         //variables que necesita el datagrid, para no tener que hacer uno por cada aplicativo
         DataPost dataforpos = new DataPost(orderby, desc, items_por_pag, pag_start, display_pag, input_json, cadena_busqueda,total_items,total_pags,id_user_cod);
-        
+
         int offset = resource.__get_inicio_offset(items_por_pag, pag_start);
-        
+
         //obtiene los registros para el grid, de acuerdo a los parametros de busqueda
         jsonretorno.put("Data", this.getCxcDao().getCartera_PaginaGrid(data_string, offset, items_por_pag, orderby, desc));
         //obtiene el hash para los datos que necesita el datagrid
         jsonretorno.put("DataForGrid", dataforpos.formaHashForPos(dataforpos));
-        
+
         return jsonretorno;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     @RequestMapping(method = RequestMethod.POST, value="/getCartera.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getCarteraJson(
             @RequestParam(value="id", required=true) Integer id,
             @RequestParam(value="iu", required=true) String id_user_cod,
             Model model
             ) {
-        
+
         log.log(Level.INFO, "Ejecutando getCarteraJson de {0}", CarterasController.class.getName());
         HashMap<String,ArrayList<HashMap<String, Object>>> jsonretorno = new HashMap<String,ArrayList<HashMap<String, Object>>>();
         ArrayList<HashMap<String, Object>> tipoMovimeinto = new ArrayList<HashMap<String, Object>>();
@@ -213,49 +177,33 @@ public class CarterasController {
         ArrayList<HashMap<String, Object>> bancosEmpresa = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> tipoCambio = new ArrayList<HashMap<String, Object>>();
         HashMap<String, String> userDat = new HashMap<String, String>();
-        
+
         //decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user_cod));
         //System.out.println("id_usuario: "+id_usuario);
-        
+
         userDat = this.getHomeDao().getUserById(id_usuario);
-        
+
         Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
         Integer id_sucursal = Integer.parseInt(userDat.get("sucursal_id"));
-        
-        if( id!=0  ){
-            //datosCotizacion = this.getCdao().getCotizacion(folio);
-            //datosGrid = this.getCdao().getDatosGrid(folio);
-            //System.out.println("Pais: "+proveedor.get(0).get("pais").toString());
-            //System.out.println("Entidad: "+proveedor.get(0).get("entidad").toString());
-        }
-        
+
         tipoMovimeinto = this.getCxcDao().getCartera_TipoMovimiento();
         formaPago = this.getCxcDao().getCartera_FormasPago();
         monedas = this.getCxcDao().getMonedas();
         bancos = this.getCxcDao().getBancos(id_empresa);
         bancosEmpresa = this.getCxcDao().getCartera_BancosEmpresa(id_empresa);
         tipoCambio = this.getCxcDao().getTipoCambioActual();
-        
-        
-        
-        
+
         jsonretorno.put("tipo_mov", tipoMovimeinto);
         jsonretorno.put("Monedas", monedas);
         jsonretorno.put("Formaspago", formaPago);
         jsonretorno.put("Bancos", bancos);
         jsonretorno.put("Bancos_kemikal", bancosEmpresa);
         jsonretorno.put("Tipocambio", tipoCambio);
-        
-        
+
         return jsonretorno;
     }
-    
-    
-    
-    
-    
-    
+
     //Buscador de clientes
     @RequestMapping(method = RequestMethod.POST, value="/get_buscador_clientes.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> get_buscador_clientesJson(
@@ -282,7 +230,6 @@ public class CarterasController {
         return jsonretorno;
     }
     
-    
     //Obtener datos del cliente a partir del Numero de Control
     @RequestMapping(method = RequestMethod.POST, value="/getDataByNoClient.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getDataByNoClientJson(
@@ -306,7 +253,6 @@ public class CarterasController {
         
         return jsonretorno;
     }
-    
     
     //Obtiene cuentas
     @RequestMapping(method = RequestMethod.POST, value="/getCuentas.json")
@@ -339,7 +285,6 @@ public class CarterasController {
         return jsonretorno;
     }
     
-    
     //Obtiene bancos por moneda
     @RequestMapping(method = RequestMethod.POST, value="/obtener_bancos_moneda_kemikal.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> get_bancos_moneda_kemikalJson(
@@ -364,9 +309,7 @@ public class CarterasController {
         jsonretorno.put("Bancos_moneda", bancos);
         return jsonretorno;
     }
-    
-    
-    
+
     //Obtiene numeros de cuentas
     @RequestMapping(method = RequestMethod.POST, value="/obtener_numero_de_cuenta.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> get_obtener_numero_de_cuentaJson(
@@ -383,60 +326,46 @@ public class CarterasController {
         jsonretorno.put("Cuentas", bancos);
         return jsonretorno;
     }
-    
-    
-    
-    
-    
-    
+
     //Obtiene numeros de cuentas
     @RequestMapping(method = RequestMethod.POST, value="/obtener_anticipos.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getObtenerAanticiposJson(
             @RequestParam(value="id_cliente", required=true) Integer id_cliente,
             Model model
             ) {
-        
+
         HashMap<String,ArrayList<HashMap<String, Object>>> jsonretorno = new HashMap<String,ArrayList<HashMap<String, Object>>>();
         ArrayList<HashMap<String, Object>> sumanticipos_mn = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> sumanticipos_usd = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> anticipos = new ArrayList<HashMap<String, Object>>();
-        
+
         sumanticipos_mn = this.getCxcDao().getCartera_SumaAnticiposMN(id_cliente);
         sumanticipos_usd = this.getCxcDao().getCartera_SumaAnticiposUSD(id_cliente);
         anticipos = this.getCxcDao().getCartera_Anticipos(id_cliente);
-        
-        
+
         jsonretorno.put("suma_mn", sumanticipos_mn);
         jsonretorno.put("suma_usd", sumanticipos_usd);
         jsonretorno.put("anticipos", anticipos);
-        
+
         return jsonretorno;
     }
-    
-    
-    
-    
+
     //Obtiene las facturas del cliente
     @RequestMapping(method = RequestMethod.POST, value="/obtener_facturas.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getObtenerFacturasJson(
             @RequestParam(value="id_cliente", required=true) Integer id_cliente,
             Model model
             ) {
-        
+
         HashMap<String,ArrayList<HashMap<String, Object>>> jsonretorno = new HashMap<String,ArrayList<HashMap<String, Object>>>();
         ArrayList<HashMap<String, Object>> facturas = new ArrayList<HashMap<String, Object>>();
-        
+
         facturas = this.getCxcDao().getCartera_Facturas(id_cliente);
-        
+
         jsonretorno.put("Facturas", facturas);
         return jsonretorno;
     }
-    
-    
-    
-    
-    
-    
+
     //registro de pagos
     @RequestMapping(method = RequestMethod.POST, value="/registra_pagos.json")
     public @ResponseBody HashMap<String, String> editJson(
@@ -465,39 +394,37 @@ public class CarterasController {
             @RequestParam(value="saldo_a_favor", required=true) String saldo_a_favor,
             Model model
             ) throws BbgumProxyError, IOException {
-            
+
             Integer id=0;//esta variable solo se declaro para pasar al procedimiento
             Integer app_selected = 14;
             String command_selected = "pago";
-            
+
             System.out.println("Registro de pago");
-            
+
             //decodificar id de usuario
             Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
 
-            
+
             System.out.println("monto_pago:"+monto_pago +"     anticipo_gastado: "+anticipo_gastado +"     no_transaccion_anticipo:"+no_transaccion_anticipo);
-            
-            
+
+
             String[] arreglo = cadena_valores.split("&");
-            
+
             for(int i=0; i<arreglo.length; i++) arreglo[i] = "'"+arreglo[i]+"'";
-            
-            
+
             Calendar calendario = Calendar.getInstance();
             int hora =calendario.get(Calendar.HOUR_OF_DAY);
             int minutos = calendario.get(Calendar.MINUTE);
             int segundos = calendario.get(Calendar.SECOND);
-            
-            
+
             //serializar el arreglo
             String extra_data_array = StringUtils.join(arreglo, ",");
-            
+
             HashMap<String, String> jsonretorno = new HashMap<String, String>();
-            
+
             HashMap<String, String> succes = new HashMap<String, String>();
-            
-            String data_string = 
+
+            String data_string =
                     app_selected+"___"+                             //1
                     command_selected+"___"+                         //2
                     id_usuario+"___"+                               //3
@@ -522,21 +449,19 @@ public class CarterasController {
                     anticipo_gastado+"___"+
                     no_transaccion_anticipo+"___"+
                     saldo_a_favor;
-                    
-            
-            
+
             succes = this.getCxcDao().selectFunctionValidateAaplicativo(data_string,app_selected,extra_data_array);
-            
+
             log.log(Level.INFO, "despues de validacion {0}", String.valueOf(succes.get("success")));
             String actualizo = "0";
-            
+
             if(String.valueOf(succes.get("success")).equals("true")){
                 actualizo = this.getCxcDao().selectFunctionForThisApp(data_string, extra_data_array);
                 String pag_id = String.valueOf(actualizo.split("___")[0]);
                 jsonretorno.put("numero_transaccion", pag_id);
                 jsonretorno.put("identificador_pago",String.valueOf(actualizo.split("___")[1]));
-                
-                /* From this point onward 
+
+                /* From this point onward
                 This code really sucks !!, because of there no clear strategy to catch the error and show it at user's interface
                 Conversily user's interface will never know if the request has gone missing */
                 HashMap<String, String> userDat = this.getHomeDao().getUserById(id_usuario);
@@ -544,19 +469,19 @@ public class CarterasController {
                 String no_id = this.getGralDao().getNoIdEmpresa(id_empresa);
                 String serieFolio = this.getCxcDao().q_serie_folio(id_usuario);
                 String filename = no_id + "_" + serieFolio + ".xml";
-                
+
                 LegacyRequest req = new LegacyRequest();
 
                 req.sendTo("cxc");
                 req.from("webui");
                 req.action("dopago");
-         
+
                 HashMap<String, String> kwargs = new HashMap<String, String>();
                 kwargs.put("filename", filename);
                 kwargs.put("usr_id", id_usuario.toString());
                 kwargs.put("pag_id", pag_id.toString());
                 req.args(kwargs);
-                
+
                 BbgumProxy bbgumProxy = new BbgumProxy();
 
                 try {
@@ -575,19 +500,15 @@ public class CarterasController {
                             Level.WARNING, ex.getMessage());
                 }
             }
-            
+
             jsonretorno.put("success",String.valueOf(succes.get("success")));
             System.out.println("numero_transaccion: "+jsonretorno.get("numero_transaccion"));
             System.out.println("identificador_pago: "+jsonretorno.get("identificador_pago"));
-            
+
             log.log(Level.INFO, "Salida json {0}", String.valueOf(jsonretorno.get("success")));
         return jsonretorno;
     }
-    
-    
-    
-    
-    
+
     @RequestMapping(method = RequestMethod.POST, value="/generar_anticipo.json")
     public @ResponseBody HashMap<String, String> GeneraAnticipoJson(
             @RequestParam(value="fecha_anticipo", required=true) String fecha_anticipo,
@@ -607,7 +528,6 @@ public class CarterasController {
             System.out.println("Registro de anticipo");
             //decodificar id de usuario
             Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-            //System.out.println("id_usuario: "+id_usuario);
             
             //serializar el arreglo
             String extra_data_array ="'sin datos'";
@@ -625,7 +545,6 @@ public class CarterasController {
                                 id_cliente+"___"+
                                 observaciones.toUpperCase();
             
-            
             succes = this.getCxcDao().selectFunctionValidateAaplicativo(data_string,app_selected,extra_data_array);
             
             log.log(Level.INFO, "despues de validacion {0}", String.valueOf(succes.get("success")));
@@ -639,13 +558,10 @@ public class CarterasController {
             jsonretorno.put("success",String.valueOf(succes.get("success")));
             jsonretorno.put("numero_transaccion",String.valueOf(actualizo));
             
-            
             log.log(Level.INFO, "Salida json {0}", String.valueOf(jsonretorno.get("success")));
         return jsonretorno;
     }
-    
-    
-    
+
     //cancelacion de pagos
     @RequestMapping(method = RequestMethod.POST, value="/cancelar_pagos.json")
     public @ResponseBody HashMap<String, String> CancelarPagosJson(
@@ -707,26 +623,7 @@ public class CarterasController {
             log.log(Level.INFO, "Salida json {0}", String.valueOf(jsonretorno.get("success")));
         return jsonretorno;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
+
     //Obtiene monedas
     @RequestMapping(method = RequestMethod.POST, value="/get_monedas.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getObtenerMonedasJson(
@@ -740,8 +637,7 @@ public class CarterasController {
         jsonretorno.put("Monedas", monedas);
         return jsonretorno;
     }
-    
-    
+
     //Obtiene los tipos de movimiento
     @RequestMapping(method = RequestMethod.POST, value="/get_tipos_movimiento.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getgetTiposMovimientoJson(
@@ -755,9 +651,7 @@ public class CarterasController {
         jsonretorno.put("Tiposmov", tipos_mov);
         return jsonretorno;
     }
-    
-    
-    
+
     //buscador de facturas a cancelar
     @RequestMapping(method = RequestMethod.POST, value="/get_buscador_facturas_cancelar.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, String>>> getBuscarFacturasCancelarJson(
@@ -774,9 +668,7 @@ public class CarterasController {
         jsonretorno.put("FacturasCancelar", facturas_cancelar);
         return jsonretorno;
     }
-    
-    
-    
+
     //buscador de facturas de un numero de transaccion en especifico
     @RequestMapping(method = RequestMethod.POST, value="/get_facturas_num_transaccion.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, Object>>> getFacturasNumTransaccionJson(
@@ -791,10 +683,7 @@ public class CarterasController {
         jsonretorno.put("FacturasTrans", FacturasTransaccion);
         return jsonretorno;
     }
-    
-    
-    
-    
+
     //retorna los 50 ultimos numeros de transaccion de un cliente en especifico
     @RequestMapping(method = RequestMethod.POST, value="/get_num_transaccion_cliente.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, String>>> getNumTransaccionClienteJson(
@@ -809,8 +698,6 @@ public class CarterasController {
         jsonretorno.put("NumTrans", NumTransaccion);
         return jsonretorno;
     }
-    
-    
 
     //Genera pdf de depositos
     @RequestMapping(value = "/get_genera_pdf_depositos/{fecha_inicial}/{fecha_final}/{iu}/out.json", method = RequestMethod.GET ) 
@@ -845,10 +732,8 @@ public class CarterasController {
         String company_name= array_company[0].toLowerCase();
         String ruta_imagen = this.getGralDao().getImagesDir() +"logo_"+ company_name +".png";
         
-        
         File file_dir_tmp = new File(dir_tmp);
         System.out.println("Directorio temporal: "+file_dir_tmp.getCanonicalPath());
-        
         
         String file_name = "depositos_"+fecha_inicial+"_"+fecha_final+".pdf";
         //ruta de archivo de salida
@@ -862,7 +747,6 @@ public class CarterasController {
         //instancia a la clase que construye el pdf de la del reporte de estado de cuentas del cliente
         PdfDepositos x = new PdfDepositos( fileout,ruta_imagen,razon_social_empresa,fecha_inicial,fecha_final,lista_depositos);
         
-        
         System.out.println("Recuperando archivo: " + fileout);
         File file = new File(fileout);
         int size = (int) file.length(); // Tamaño del archivo
@@ -874,16 +758,9 @@ public class CarterasController {
         FileCopyUtils.copy(bis, response.getOutputStream());  	
         response.flushBuffer();
         
-        return null;
-        
+        return null;        
     }
 
-   
-    
-    
-    
-    
-    
     //Genera pdf del reporte de aplicacion de pagos a clientes, al momento de registrar un pago
     @RequestMapping(value = "/getPdfReporteAplicacionPago/{id_pago}/{iu}/out.json", method = RequestMethod.GET ) 
     public ModelAndView getGeneraPdfFacturacionJson(
@@ -954,9 +831,112 @@ public class CarterasController {
         
     } 
     
+    @RequestMapping(value = "/getPdfFactura/{id_pago}/{iu}/outPdfFactura.json", method = RequestMethod.GET ) 
+    public ModelAndView getPdfFacturaJson(
+                @PathVariable("id_pago") Integer id_pago,
+                @PathVariable("iu") String id_user,
+                HttpServletRequest request, 
+                HttpServletResponse response, 
+                Model model)
+            throws ServletException, IOException, URISyntaxException, DocumentException, Exception {
+
+        HashMap<String, String> userDat = new HashMap<String, String>();
+       
+        System.out.println("PDF de Factura");
+        Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
+        String aux_no_fac = this.getGralDao().getNombreFactura(id_pago);
+        userDat = this.getHomeDao().getUserById(id_usuario);
+        Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
+        String rfcEmpresa = this.getGralDao().getRfcEmpresaEmisora(id_empresa);
+        System.out.println("id_usuario: "+id_usuario);
+        System.out.println("id_empresa: "+id_empresa);
+        System.out.println("aux_no_fac: "+aux_no_fac);
+        System.out.println("rfcEmpresa: "+rfcEmpresa);
+        
+        String dir_tmp = this.getGralDao().getTmpDir();
+        File file_dir_tmp = new File(dir_tmp);
+        System.out.println("Directorio temporal: "+file_dir_tmp.getCanonicalPath());
+        String file_name = aux_no_fac+".pdf";
+        
+        //ruta de archivo de salida
+        String fileout = this.getGralDao().getCfdiTimbreEmitidosDir() + "/"+ rfcEmpresa + "/" + file_name;
+        System.out.println("Intentanto obtener PDF Factura de la ruta:" +fileout);
+        Logger.getLogger(CarterasController.class.getName()).log(Level.INFO, "Intentanto obtener PDF Factura de la ruta:" +fileout);
+        
+        ArrayList<HashMap<String, String>> datos_header = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, String>> lista_facturas = new ArrayList<HashMap<String, String>>();
+        
+        System.out.println("Recuperando archivo: " + fileout);
+        File file = new File(fileout);
+        int size = (int) file.length(); // Tamaño del archivo
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        response.setBufferSize(size);
+        response.setContentLength(size);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + file.getName() +"\"");
+        FileCopyUtils.copy(bis, response.getOutputStream());  	
+        response.flushBuffer();
+
+        return null;
+        
+    } 
     
-    
-    
-    
+    @RequestMapping(value = "/getXmlFactura/{id_pago}/{iu}/outXmlFactura.json", method = RequestMethod.GET ) 
+    public ModelAndView getXmlFacturaJson(
+                @PathVariable("id_pago") Integer id_pago,
+                @PathVariable("iu") String id_user,
+                HttpServletRequest request, 
+                HttpServletResponse response, 
+                Model model)
+            throws ServletException, IOException, URISyntaxException, DocumentException, Exception {
+        
+        HashMap<String, String> userDat = new HashMap<String, String>();
+
+        System.out.println("XML de Factura");
+        Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
+        String aux_no_fac = this.getGralDao().getNombreFactura(id_pago);
+        userDat = this.getHomeDao().getUserById(id_usuario);
+        Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
+        String rfcEmpresa = this.getGralDao().getRfcEmpresaEmisora(id_empresa);
+        System.out.println("id_usuario: "+id_usuario);
+        System.out.println("id_empresa: "+id_empresa);
+        System.out.println("aux_no_fac: "+aux_no_fac);
+        System.out.println("rfcEmpresa: "+rfcEmpresa);
+
+        String dir_tmp = this.getGralDao().getTmpDir();
+        File file_dir_tmp = new File(dir_tmp);
+        System.out.println("Directorio temporal: "+file_dir_tmp.getCanonicalPath());
+        String file_name = aux_no_fac+".xml";
+        
+        //ruta de archivo de salida
+       // String fileout = file_dir_tmp + "/" + rfcEmpresa + "/" +  file_name;
+       String fileout = this.getGralDao().getCfdiTimbreEmitidosDir() + "/"+ rfcEmpresa + "/" + file_name;
+       System.out.println("Intentanto obtener XML Factura de la ruta:" +fileout);
+        Logger.getLogger(CarterasController.class.getName()).log(Level.INFO, "Intentanto obtener XML Factura de la ruta:" +fileout);
+        //String fileout = file_dir_tmp + "\\" + file_name;
+        
+        ArrayList<HashMap<String, String>> datos_header = new ArrayList<HashMap<String, String>>();
+        ArrayList<HashMap<String, String>> lista_facturas = new ArrayList<HashMap<String, String>>();
+        
+        /*
+        datos_header = this.getCxcDao().getCartera_PagosDatosHeader(id_pago,id_empresa);
+        lista_facturas = this.getCxcDao().getCartera_PagosAplicados(id_pago,id_empresa);
+        PdfReporteAplicacionPago x = new PdfReporteAplicacionPago(fileout,ruta_imagen,razon_social_empresa, datos_header, lista_facturas);
+        */
+        
+        System.out.println("Recuperando archivo: " + fileout);
+        File file = new File(fileout);
+        int size = (int) file.length(); // Tamaño del archivo
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
+        response.setBufferSize(size);
+        response.setContentLength(size);
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + file.getName() +"\"");
+        FileCopyUtils.copy(bis, response.getOutputStream());  	
+        response.flushBuffer();
+
+        return null;
+        
+    } 
     
 }
