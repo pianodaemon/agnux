@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.*;
-import javax.security.cert.X509Certificate;
 import org.apache.commons.ssl.PKCS8Key;
 
 
