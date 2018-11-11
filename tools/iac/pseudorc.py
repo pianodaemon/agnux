@@ -6,8 +6,11 @@ class PseudoRc(object):
     Performs as an old fashion slackware rc.whatever scripts
     '''
 
-    def __init__(self, conn):
-        self._conn = conn
+    def __init__(self, conn=None):
+        if conn is None:
+            self._conn = docker.from_env()
+        else:
+            self._conn = conn
 
     def __call__(self, name, action, before=None, after=None):
         '''Stops, starts and restarts a container as per name'''
