@@ -49,4 +49,7 @@ RUN wget -q -O $GLASSFISH_PKG $GLASSFISH_URL && \
 # Ports being exposed
 EXPOSE 4848 8080 8181
 
-ENTRYPOINT ["/service/webui.sh", "/service/agnux.war"]
+ENTRYPOINT ["/service/docker-entrypoint.sh"]
+
+# Start the GlassFish domain
+CMD ["asadmin", "start-domain", "--verbose"]
