@@ -23,19 +23,23 @@ WORKDIR /service
 RUN mv ../erp-quimicos/target/agnux.war ./
 RUN stat agnux.war
 
-# Support for JDK 1.6 (required to run glassfish)
-RUN apt-get install -y lib32ncurses5 bzip2
-
-RUN tar xvjf glassfish.tar.bz2
-RUN tar xvzf jdkxi386.tar.gz
-
-RUN rm glassfish.tar.bz2
-RUN rm jdkxi386.tar.gz
+# remove needless stuff
 RUN rm -rf /erp-quimicos
 RUN rm -rf /bbgum-impt
 RUN rm -rf /bbgum-jcli
 RUN rm -rf /r1
 
+
+# Support for JDK 1.6 (required to run glassfish)
+RUN apt-get install -y lib32ncurses5 bzip2
+
+# uncompress and deletion of file compressed
+RUN tar xvjf glassfish.tar.bz2 > /dev/null
+RUN rm glassfish.tar.bz2
+
+# uncompress and deletion of file compressed
+RUN tar xvzf jdkxi386.tar.gz > /dev/null
+RUN rm jdkxi386.tar.gz
 
 EXPOSE 8080
 
