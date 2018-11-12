@@ -31,16 +31,31 @@ RUN rm -rf /r1
 
 
 # Support for JDK 1.6 (required to run glassfish)
-RUN apt-get install -y lib32ncurses5 bzip2
+RUN apt-get install -y lib32ncurses5 unzip bzip2 wget
 
-# uncompress and deletion of file compressed
-RUN tar xvjf glassfish.tar.bz2 > /dev/null
-RUN rm glassfish.tar.bz2
+# Set environment variables
+ENV GLASSFISH_PKG=/service/glassfish-3.1.2.2.zip \
+    GLASSFISH_URL=http://download.oracle.com/glassfish/3.1.2.2/release/glassfish-3.1.2.2.zip \
+    GLASSFISH_HOME=/service/glassfish3 \
+    MD5=ae8e17e9dcc80117cb4b39284302763f \
+    PATH=$PATH:/service/glassfish3/bin
+
+# Download and install GlassFish
+RUN wget -q -O $GLASSFISH_PKG $GLASSFISH_URL && \
+    echo "$MD5 *$GLASSFISH_PKG" | md5sum -c - && \
+    unzip -o $GLASSFISH_PKG -d /service && \
+    rm -f $GLASSFISH_PKG && \
+    \
+    # Remove Windows .bat and .exe files to save space
+    cd $GLASSFISH_HOME && \
+    find . -name '*.bat' -delete && \
+    find . -name '*.exe' -delete
 
 # uncompress and deletion of file compressed
 RUN tar xvzf jdkxi386.tar.gz > /dev/null
 RUN rm jdkxi386.tar.gz
 
-EXPOSE 8080
+# Ports being exposed
+EXPOSE 4848 8080 8181
 
-ENTRYPOINT ["/service/webui.sh", "../erp-quimicos/target/agnux.war"]
+ENTRYPOINT ["/service/webui.sh", "/service/agnux.war"]
