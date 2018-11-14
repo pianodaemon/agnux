@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.springdaos;
+
 
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.kemikal.interfacedaos.GralInterfaceDao;
@@ -14,12 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 16/03/2012
- */
+
+
 public class GralSpringDao implements GralInterfaceDao{
     private JdbcTemplate jdbcTemplate;
     
@@ -33,13 +26,13 @@ public class GralSpringDao implements GralInterfaceDao{
     
     @Override
     public String getCfdEmitidosDir() {
-        String cfdemitidosdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfd" + "/"+"emitidos" + "/";
+        String cfdemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfd" + "/"+"emitidos" + "/";
         return cfdemitidosdir;
     }
     
     @Override
     public String getCfdiSolicitudesDir() {
-        String cfdemitidosdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfdi" + "/"+"solicitudes" + "/";
+        String cfdemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfdi" + "/"+"solicitudes" + "/";
         return cfdemitidosdir;
     }
     
@@ -51,37 +44,37 @@ public class GralSpringDao implements GralInterfaceDao{
     
     @Override
     public String getProdImgDir() {
-        String xsldir = System.getenv("HOME") + "/resources/productos/img/";
+        String xsldir = System.getenv("MS_BASE_DIR") + "/resources/productos/img/";
         return xsldir;
     }
     
     @Override
     public String getProdPdfDir() {
-        String xsldir = System.getenv("HOME") + "/resources/productos/pdf/";
+        String xsldir = System.getenv("MS_BASE_DIR") + "/resources/productos/pdf/";
         return xsldir;
     }
     
     @Override
     public String getCfdiTimbreEmitidosDir() {
-        String cfditimbreemitidosdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "emitidos" + "/";
+        String cfditimbreemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "emitidos" + "/";
         return cfditimbreemitidosdir;
     }
     
     @Override
     public String getCfdiTimbreCanceladosDir() {
-        String cfditimbreemitidosdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "cancelados" + "/";
+        String cfditimbreemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "cancelados" + "/";
         return cfditimbreemitidosdir;
     }
     
     @Override
     public String getCfdiTimbreJarWsDir() {
-        String cfditimbrejarwsdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "jarwscli" + "/";
+        String cfditimbrejarwsdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfdi" + "/"+"timbre" + "/" + "jarwscli" + "/";
         return cfditimbrejarwsdir;
     }
     
     @Override
     public String getImagesDir() {
-        String imagesdir = System.getenv("HOME") + "/" + "resources" + "/"+"images" + "/";
+        String imagesdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"images" + "/";
         return imagesdir;
     }
     
@@ -99,34 +92,34 @@ public class GralSpringDao implements GralInterfaceDao{
     
     @Override
     public String getSslDir() {
-        String ssldir = System.getenv("HOME") + "/" + "resources" + "/"+"ssl" + "/";
+        String ssldir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"ssl" + "/";
         //System.out.println(ssldir);
         return ssldir;
     }
     
     @Override
     public String getXslDir() {
-        String xsldir = System.getenv("HOME") + "/" + "resources" +"/"+"schemas" + "/"+"xsl" + "/";
+        String xsldir = System.getenv("MS_BASE_DIR") + "/" + "resources" +"/"+"schemas" + "/"+"xsl" + "/";
         //System.out.println(xsldir);
         return xsldir;
     }
     
     @Override
     public String getXsdDir() {
-        String xsddir = System.getenv("HOME") + "/" + "resources" +"/"+"schemas" + "/"+"xsd" + "/";
+        String xsddir = System.getenv("MS_BASE_DIR") + "/" + "resources" +"/"+"schemas" + "/"+"xsd" + "/";
         //System.out.println(xsddir);
         return xsddir;
     }
     
     @Override
     public String getTmpDir() {
-        String xsldir = System.getenv("HOME") + "/" + "resources" + "/"+"tmp" + "/";
+        String xsldir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"tmp" + "/";
         return xsldir;
     }
     
     @Override
     public String getZebraDir() {
-        String zebradir = System.getenv("HOME") + "/" + "resources" + "/"+"zebra";
+        String zebradir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"zebra";
         return zebradir;
     }
     

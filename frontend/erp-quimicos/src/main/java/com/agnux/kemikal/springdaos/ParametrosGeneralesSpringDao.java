@@ -1,17 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.springdaos;
+
 
 import com.agnux.kemikal.interfacedaos.ParametrosGeneralesInterfaceDao;
 import org.springframework.jdbc.core.JdbcTemplate;
 import java.util.Map;
 
-/**
- *
- * @author agnux
- */
+
 public class ParametrosGeneralesSpringDao implements ParametrosGeneralesInterfaceDao{
     
     private JdbcTemplate jdbcTemplate;
@@ -26,34 +20,32 @@ public class ParametrosGeneralesSpringDao implements ParametrosGeneralesInterfac
     
     @Override
     public String getCfdEmitidosDir() {
-        String cfdemitidosdir = System.getenv("HOME") + "/" + "resources" + "/"+"cfd" + "/"+"emitidos" + "/";
+        String cfdemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfd" + "/"+"emitidos" + "/";
         return cfdemitidosdir;
     }
     
     @Override
     public String getImagesDir() {
-        String imagesdir = System.getenv("HOME") + "/" + "resources" + "/"+"images" + "/";
+        String imagesdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"images" + "/";
         return imagesdir;
     }
     
     @Override
     public String getSslDir() {
-        String ssldir = System.getenv("HOME") + "/" + "resources" + "/"+"ssl" + "/";
-        //System.out.println(ssldir);
+        String ssldir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"ssl" + "/";
         return ssldir;
     }
     
     
     @Override
     public String getXslDir() {
-        String xsldir = System.getenv("HOME") + "/" + "resources" + "/"+"schemas" + "/";
-        //System.out.println(xsldir);
+        String xsldir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"schemas" + "/";
         return xsldir;
     }
     
     @Override
     public String getTmpDir() {
-        String xsldir = System.getenv("HOME") + "/" + "resources" + "/"+"tmp" + "/";
+        String xsldir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"tmp" + "/";
         return xsldir;
     }
 
