@@ -85,6 +85,7 @@ if __name__ == "__main__":
 
     LOG_NAME = 'fiscal.log'
 
+    debug = eval('logging.' + os.environ.get('MS_DEBUG'))
     base_dirs = fetch_base_dirs()
 
     log_path = os.path.join(base_dirs['LOGS_DIR'], LOG_NAME)
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print('Exiting')
     except:
-        if debuglev == logging.DEBUG:
+        if debug == logging.DEBUG:
             print('Whoops! Problem in server:', file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
         sys.exit(1)
