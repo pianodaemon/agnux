@@ -9,7 +9,8 @@ from os.path import expanduser
 from docmaker.pipeline import DocPipeLine
 from custom.profile import ProfileReader
 
-def __set_cmdargs_up():
+
+def _set_cmdargs_up():
     """parses the cmd line arguments at the call"""
 
     psr_desc='Document maker command line control interface'
@@ -17,17 +18,6 @@ def __set_cmdargs_up():
 
     psr = argparse.ArgumentParser(description=psr_desc, epilog=psr_epi)
 
-    psr.add_argument(
-        '-d', '--debug', action='store_true',
-        dest='dm_debug', help='print debug information'
-    )
-    psr.add_argument(
-        '-r', '--resdir', action='store',
-        dest='resdir', help='points out the one resources directory')
-    psr.add_argument(
-        '-c', '--config', action='store',
-        dest='config', help='load an specific config profile'
-    )
     psr.add_argument(
         '-b', '--builder',
         dest='dm_builder', help='specify the builder to use'
@@ -46,6 +36,16 @@ def __set_cmdargs_up():
 
 def dmcli(args, logger):
 
+    RESOURCES_DIR = os.path.join(os.environ.get("MS_BASE_DIR"),
+                                 'resources')
+    if not os.path.isdir(RESOURCES_DIR):
+        raise Exception('We can not go ahead without a resource directory')
+
+    PROFILES_DIR = os.path.join(RESOURCES_DIR, 'profiles')
+
+    if not os.path.isdir(PROFILES_DIR):
+        raise Exception('We can not go ahead without a profile directory')
+
     def read_settings(s_file):
         logger.debug("looking for config profile file in:\n{0}".format(
             os.path.abspath(s_file)))
@@ -54,18 +54,12 @@ def dmcli(args, logger):
             return reader(s_file)
         raise Exception("unable to locate the config profile file")
 
-    logging.basicConfig(level=logging.DEBUG if args.dm_debug else logging.INFO)
-    logger.debug(args)
+    profile_path = os.path.join(PROFILES_DIR, os.environ.get('MS_PROFILE'))
 
-    DEFAULT_RESDIR = '{}/resources'.format(expanduser("~"))
-    DEFAULT_PROFILE = 'default.json'
+    if not os.path.exists(profile_path):
+        raise Exception('We can not go ahead without a profile')
 
-    resdir = args.resdir if args.resdir else DEFAULT_RESDIR
-    profiles_dir = '{}/profiles'.format(resdir)
-    prof = '{}/{}'.format(profiles_dir,
-        args.config if args.config else DEFAULT_PROFILE)
-
-    pt = read_settings(prof)
+    pt = read_settings(profile_path)
 
     if not args.dm_output:
         raise Exception("not defined output file")
@@ -88,7 +82,7 @@ def dmcli(args, logger):
             raise Exception("input variables bad conformed")
 
         try:
-            dpl = DocPipeLine(logger, resdir,
+            dpl = DocPipeLine(logger, RESOURCES_DIR,
                 rdirs_conf = pt.res.dirs,
                 pgsql_conf = pt.dbms.pgsql_conn)
             dpl.run(args.dm_builder, args.dm_output, **kwargs)
@@ -97,16 +91,18 @@ def dmcli(args, logger):
     else:
         raise Exception("builder module not define")
 
+
 if __name__ == "__main__":
 
     logger = logging.getLogger(__name__)
-    args = __set_cmdargs_up()
+    debug = eval('logging.' + os.environ.get('MS_DEBUG'))
+    logging.basicConfig(debug)
 
     try:
-        dmcli(args, logger)
+        dmcli(_set_cmdargs_up(), logger)
         logger.info('successful builder execution')
     except:
-        if args.dm_debug:
+        if debug == logging.DEBUG:
             traceback.print_exc()
         sys.exit(1)
 
