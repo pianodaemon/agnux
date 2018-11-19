@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
 
 import com.agnux.common.helpers.StringHelper;
 import java.net.URISyntaxException;
@@ -28,13 +25,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
     
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 22/febrero/2013
- * 
- */
+
 public class PdfInvActualizaPrecio {
     private HashMap<String, String> datosHeaderFooter = new HashMap<String, String>();
     private ArrayList<HashMap<String, String>> lista_productos = new ArrayList<HashMap<String, String>>();
@@ -473,13 +464,13 @@ public class PdfInvActualizaPrecio {
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(cell);
                 */
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setBorder(0);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("presentacion"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("presentacion")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setBorder(0);

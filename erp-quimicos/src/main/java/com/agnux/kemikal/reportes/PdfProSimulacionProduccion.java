@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.StringHelper;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -27,10 +25,9 @@ import com.itextpdf.text.pdf.ColumnText;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-/**
- *
- * @author agnux
- */
+
+
+
 public class PdfProSimulacionProduccion {
     private HashMap<String, String> datosHeaderFooter = new HashMap<String, String>();
     private ArrayList<HashMap<String, String>> lista_componentes = new ArrayList<HashMap<String, String>>();
@@ -297,7 +294,7 @@ public class PdfProSimulacionProduccion {
                 
                 String descripcion = map.get("descripcion");
                 descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 tablaComponentes.addCell(cell);
