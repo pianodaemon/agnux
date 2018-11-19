@@ -3,7 +3,6 @@ package com.agnux.kemikal.controllers;
 
 
 import com.agnux.cfd.v2.Base64Coder;
-import com.agnux.cfd.v2.BeanFacturador;
 import com.agnux.cfdi.BeanFacturadorCfdi;
 import com.agnux.cfdi.LegacyRequest;
 import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
@@ -52,9 +51,7 @@ public class PrefacturasController {
     @Autowired
     @Qualifier("daoGral")
     private GralInterfaceDao gralDao;
-    @Autowired
-    @Qualifier("beanFacturador")
-    BeanFacturador bfcfd;
+
     @Autowired
     @Qualifier("beanFacturadorCfdi")
     BeanFacturadorCfdi bfcfdi;
@@ -82,10 +79,6 @@ public class PrefacturasController {
 
     public FacturasInterfaceDao getFacdao() {
         return facdao;
-    }
-
-    public BeanFacturador getBfCfd() {
-        return bfcfd;
     }
 
     public BeanFacturadorCfdi getBfCfdi() {

@@ -5,10 +5,8 @@
 package com.agnux.kemikal.controllers;
 
 import com.agnux.cfd.v2.Base64Coder;
-import com.agnux.cfd.v2.BeanFacturador;
 import com.agnux.cfdi.BeanCancelaCfdi;
 import com.agnux.cfdi.BeanFacturadorCfdi;
-import com.agnux.cfdi.BeanFromCfdiXml;
 import com.agnux.cfdi.LegacyRequest;
 import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
 import com.agnux.common.helpers.StringHelper;
@@ -54,15 +52,11 @@ public class NotasCreditoController {
     @Autowired
     @Qualifier("daoFacturas")
     private FacturasInterfaceDao facdao;
-    
-    @Autowired
-    @Qualifier("beanFacturador")
-    BeanFacturador bf;
-    
+
     @Autowired
     @Qualifier("daoHome")
     private HomeInterfaceDao HomeDao;
-    
+
     @Autowired
     @Qualifier("beanFacturadorCfdi")
     BeanFacturadorCfdi bfcfdi;
@@ -98,15 +92,11 @@ public class NotasCreditoController {
     public FacturasInterfaceDao getFacdao() {
         return facdao;
     }
-    
-    public BeanFacturador getBf() {
-        return bf;
-    }
-    
+
     public BeanFacturadorCfdi getBfcfdi() {
         return bfcfdi;
     }
-    
+
     @RequestMapping(value="/startup.agnux")
     public ModelAndView startUp(HttpServletRequest request, HttpServletResponse response, 
             @ModelAttribute("user") UserSessionData user

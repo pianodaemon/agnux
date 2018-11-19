@@ -1,10 +1,7 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.controllers;
+
+
 import com.agnux.cfd.v2.Base64Coder;
-import com.agnux.cfd.v2.BeanFacturador;
 import com.agnux.cfdi.BeanFacturadorCfdi;
 import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
 import com.agnux.common.helpers.StringHelper;
@@ -14,7 +11,6 @@ import com.agnux.common.obj.UserSessionData;
 import com.agnux.kemikal.interfacedaos.FacturasInterfaceDao;
 import com.agnux.kemikal.interfacedaos.GralInterfaceDao;
 import com.agnux.kemikal.interfacedaos.HomeInterfaceDao;
-import com.agnux.kemikal.reportes.pdfCfd;
 import com.agnux.kemikal.reportes.pdfCfd_CfdiTimbradoFormato2;
 import java.io.File;
 import java.io.IOException;
@@ -34,11 +30,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * @author gpmarsan@gmail.com
- * Noe Martinez 
- * 04/mayo/2012
- */
+
 @Controller
 @SessionAttributes({"user"})
 @RequestMapping("/facdevoluciones/")
@@ -57,11 +49,7 @@ public class FacDevolucionesController {
     @Autowired
     @Qualifier("daoHome")
     private HomeInterfaceDao HomeDao;
-    
-    @Autowired
-    @Qualifier("beanFacturador")
-    BeanFacturador bfcfd;
-    
+
     @Autowired
     @Qualifier("beanFacturadorCfdi")
     BeanFacturadorCfdi bfcfdi;
@@ -85,11 +73,7 @@ public class FacDevolucionesController {
     public FacturasInterfaceDao getFacdao() {
         return facdao;
     }
-    
-    public BeanFacturador getBfcfd() {
-        return bfcfd;
-    }
-    
+
     public BeanFacturadorCfdi getBfcfdi() {
         return bfcfdi;
     }
@@ -463,62 +447,6 @@ public class FacDevolucionesController {
                     
                     //Aqui se obtienen los parametros de la facturacion, nos intersa el tipo de formato para el pdf de la Nota de Credito
                     parametros = this.getFacdao().getFac_Parametros(id_empresa, id_sucursal);
-                    
-                    //Tipo facturacion CFD
-                    if(tipo_facturacion.equals("cfd")){
-                        System.out.println("::::::::::::Tipo CFD:::::::::::::::::..");
-                        listaConceptos = this.getFacdao().getNotaCreditoCfd_ListaConceptosXml(id_nota_credito);
-                        dataCliente = this.getFacdao().getNotaCreditoCfd_Cfdi_Datos(id_nota_credito);
-                        impRetenidos = this.getFacdao().getNotaCreditoCfd_CfdiTf_ImpuestosRetenidosXml();
-                        
-                        impTrasladados = this.getFacdao().getNotaCreditoCfd_CfdiTf_ImpuestosTrasladadosXml(id_sucursal);
-                        
-                        command_selected = "genera_nota_credito_cfd";
-                        //extra_data_array = "'sin datos'";
-                        datosExtras = this.getFacdao().getNotaCreditoCfd_DatosExtrasXml(id_nota_credito,tipo_cambio_nota,String.valueOf(id_usuario),select_moneda,id_empresa, id_sucursal, app_selected, command_selected, extra_data_array, fac_saldado);
-                        dataCliente.put("comprobante_attr_tc", String.valueOf(datosExtras.get("tipo_cambio")));
-                        datosExtras.put("moneda_abr", String.valueOf(dataCliente.get("moneda_abr")));
-                        datosExtras.put("nombre_moneda", String.valueOf(dataCliente.get("nombre_moneda")));
-                        
-                        //Xml nota de credito cfd
-                        this.getBfcfd().init(dataCliente, listaConceptos,impRetenidos,impTrasladados , proposito,datosExtras, id_empresa, id_sucursal);
-                        this.getBfcfd().start();
-                        
-                        //Obtiene serie_folio de la Nota de Credito que se acaba de guardar
-                        serieFolio = this.getFacdao().getSerieFolioNotaCredito(id_nota_credito);
-                        //refId = this.getFacdao().getRefIdNotaCredito(id_nota_credito);
-                        
-                        String cadena_original=this.getBfcfd().getCadenaOriginal();
-                        //System.out.println("cadena_original:"+cadena_original);
-                        
-                        String sello_digital = this.getBfcfd().getSelloDigital();
-                        //System.out.println("sello_digital:"+sello_digital);
-                        String fechaTimbre = "";
-                        String noCertSAT = "";
-                        
-                        //Conceptos para el pdfcfd
-                        listaConceptosPdf = this.getFacdao().getNotaCreditoCfd_ListaConceptosPdf(serieFolio);
-                        
-                        //Datos para el pdf
-                        datosExtrasPdf = this.getFacdao().getNotaCreditoCfd_DatosExtrasPdf( serieFolio, proposito, cadena_original,sello_digital, id_sucursal, id_empresa);
-                        datosExtrasPdf.put("fechaTimbre", fechaTimbre);
-                        datosExtrasPdf.put("noCertificadoSAT", noCertSAT);
-                        datosExtrasPdf.put("fecha_comprobante", this.getBfcfd().getFecha());
-                        
-                        //pdf Nota
-                        if (parametros.get("formato_factura").equals("2")){
-                            pdfCfd_CfdiTimbradoFormato2 pdfFactura = new pdfCfd_CfdiTimbradoFormato2(this.getGralDao(), dataCliente, listaConceptosPdf, leyendas, datosExtrasPdf, id_empresa, id_sucursal);
-                            pdfFactura.ViewPDF();
-                        }else{
-                            pdfCfd pdfFactura = new pdfCfd(this.getGralDao(), dataCliente, listaConceptosPdf, datosExtrasPdf, id_empresa, id_sucursal);
-                        }
-                        
-                        jsonretorno.put("folio",serieFolio);
-                        
-                        valorRespuesta="true";
-                        msjRespuesta = "La devoluci&oacute;n se realiz&oacute; con &eacute;xito\nSe gener&oacute; la Nota de Cr&eacute;dito: "+serieFolio;
-                    }//termina tipo CFD
-                    
                     
                     //tipo facturacion CFDI
                     if(tipo_facturacion.equals("cfdi")){
