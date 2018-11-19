@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.StringHelper;
 import java.net.URISyntaxException;
 import java.util.Iterator;
@@ -28,13 +26,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
     
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 30/enero/2013
- * 
- */
+
+
 public class PdfInvControlCosto {
     private HashMap<String, String> datosHeaderFooter = new HashMap<String, String>();
     private ArrayList<HashMap<String, String>> lista_productos = new ArrayList<HashMap<String, String>>();
@@ -245,32 +238,32 @@ public class PdfInvControlCosto {
                 
                 String descripcion = map.get("descripcion");
                 descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("presentacion"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("presentacion")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("orden_compra"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("orden_compra")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("factura_prov"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("factura_prov")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("moneda"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("moneda")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
@@ -310,7 +303,7 @@ public class PdfInvControlCosto {
                 cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("moneda_pm"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("moneda_pm")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
