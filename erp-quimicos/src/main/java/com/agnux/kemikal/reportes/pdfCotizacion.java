@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
 
 import com.agnux.common.helpers.StringHelper;
 import com.itextpdf.text.BaseColor;
@@ -32,12 +29,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang.StringEscapeUtils;
 
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 10/febrero/2013
- */
+
+
 public class pdfCotizacion {
     private HashMap<String, String> datosHeaderFooter = new HashMap<String, String>();
     private ArrayList<HashMap<String, String>> lista_productos = new ArrayList<HashMap<String, String>>();
@@ -200,7 +193,7 @@ public class pdfCotizacion {
             tablaHeader.addCell(cell);
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmisorRazonSocial()),largeBoldFont));
+            cell = new PdfPCell(new Paragraph((this.getEmisorRazonSocial().toUpperCase()),largeBoldFont));
             cell.setBorder(0);
             cell.setUseAscender(true);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -224,14 +217,14 @@ public class pdfCotizacion {
             
             //DOMICILIO FISCAL --> texto
             cell = new PdfPCell(new Paragraph(
-                    StringHelper.capitalizaString(this.getEmisorCalle()) + " " + 
-                    StringHelper.capitalizaString(this.getEmisorNumero()) +  "\n" + 
-                    StringHelper.capitalizaString(this.getEmisorColonia()) + ", "+
-                    StringHelper.capitalizaString(this.getEmisorMunicipio()) + "\n " + 
-                    StringHelper.capitalizaString(this.getEmisorEstado())+ ", " + 
-                    StringHelper.capitalizaString(this.getEmisorPais()) + ", C.P. " + this.getEmisorCp() +"\n"+
-                    "TEL. "+ StringHelper.capitalizaString(this.getEmisorTelefono())+"\n"+
-                    "R.F.C.: " + StringHelper.capitalizaString(this.getEmisorRfc())+"\n"+
+                    (this.getEmisorCalle().toUpperCase()) + " " + 
+                    (this.getEmisorNumero().toUpperCase()) +  "\n" + 
+                    (this.getEmisorColonia().toUpperCase()) + ", "+
+                    (this.getEmisorMunicipio().toUpperCase()) + "\n " + 
+                    (this.getEmisorEstado().toUpperCase())+ ", " + 
+                    (this.getEmisorPais().toUpperCase()) + ", C.P. " + this.getEmisorCp() +"\n"+
+                    "TEL. "+ (this.getEmisorTelefono().toUpperCase())+"\n"+
+                    "R.F.C.: " + (this.getEmisorRfc().toUpperCase())+"\n"+
                     this.getEmisorPaginaWeb(), smallFont));
             cell.setBorder(0);
             //cell.setBorderWidth(1);
@@ -262,16 +255,16 @@ public class pdfCotizacion {
                 etiqueta_tipo="PROSPECTO";
             }
             
-            String cadena_datos = StringHelper.capitalizaString(this.getClieRazonSocial())+" \n"+
-                    StringHelper.capitalizaString(this.getClieCalle()) +" "+ 
+            String cadena_datos = (this.getClieRazonSocial().toUpperCase())+" \n"+
+                    (this.getClieCalle().toUpperCase()) +" "+ 
                     this.getClieNumero() + ", " + 
-                    StringHelper.capitalizaString(this.getClieColonia())+ ", " + 
-                    StringHelper.capitalizaString(this.getClieMunicipio()) + ", " + 
-                    StringHelper.capitalizaString(this.getClieEstado()) + ", " + 
-                    StringHelper.capitalizaString(this.getCliePais()) + 
+                    (this.getClieColonia().toUpperCase())+ ", " + 
+                    (this.getClieMunicipio().toUpperCase()) + ", " + 
+                    (this.getClieEstado().toUpperCase()) + ", " + 
+                    (this.getCliePais().toUpperCase()) + 
                     " \nC.P. " + this.getClieCp() + 
                     "     TEL. "+ this.getClieTel() +  
-                    "\nR.F.C.: " + StringHelper.capitalizaString(this.getClieRfc());
+                    "\nR.F.C.: " + (this.getClieRfc().toUpperCase());
             
             //aqui va  la etiqueta CLIENTE ó PROSPECTO dependiendo del tipo de cotizacion
             
@@ -291,9 +284,8 @@ public class pdfCotizacion {
             
             
             //FILA 2
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(cadena_datos), smallFont));
+            cell = new PdfPCell(new Paragraph((cadena_datos.toUpperCase()), smallFont));
             cell.setBorder(0);
-            //cell.setBorderWidth(1);
             cell.setRowspan(2);
             cell.setRightIndent(10);
             cell.setVerticalAlignment(Element.ALIGN_TOP);
@@ -302,12 +294,11 @@ public class pdfCotizacion {
             
             cell = new PdfPCell(new Paragraph("CONTACTO:",smallFont));
             cell.setBorder(0);
-            //cell.setBorderWidth(1);
             cell.setRightIndent(10);
             tableHelper.addCell(cell);
             
             //FILA 3
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getClieContacto()), smallFont));
+            cell = new PdfPCell(new Paragraph((this.getClieContacto().toUpperCase()), smallFont));
             cell.setBorder(0);
             //cell.setBorderWidth(1);
             cell.setRightIndent(10);
@@ -473,7 +464,7 @@ public class pdfCotizacion {
                 tablaPartidas.addCell(cell);
                 
                 String producto = StringEscapeUtils.unescapeHtml(map.get("producto"));
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(producto), smallFont));
+                cell = new PdfPCell(new Paragraph((producto.toUpperCase()), smallFont));
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 tablaPartidas.addCell(cell);
@@ -492,18 +483,18 @@ public class pdfCotizacion {
                     cell.setHorizontalAlignment(Element.ALIGN_CENTER);
                     tablaPartidas.addCell(cell);
                     
-                    cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("descripcion_larga"))), smallFont));
+                    cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("descripcion_larga")).toUpperCase()), smallFont));
                     cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                     cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                     tablaPartidas.addCell(cell);
                 }
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tablaPartidas.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("presentacion"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("presentacion")).toUpperCase()), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 tablaPartidas.addCell(cell);
