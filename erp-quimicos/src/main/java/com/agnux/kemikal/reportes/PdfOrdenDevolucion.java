@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.StringHelper;
 import com.itextpdf.text.Image;
 import java.net.URISyntaxException;
@@ -26,13 +24,8 @@ import com.itextpdf.text.pdf.BaseFont;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 27/ago/2013
- * 
- */
+
+
 public class PdfOrdenDevolucion {
     //--variables para pdf--
     private String imagen;
@@ -93,7 +86,7 @@ public class PdfOrdenDevolucion {
             table.addCell(cell);
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_razon_social")),largeBoldFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_razon_social").toUpperCase()),largeBoldFont));
             cell.setBorder(0);
             cell.setUseAscender(true);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -123,7 +116,7 @@ public class PdfOrdenDevolucion {
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             table.addCell(cell);
             
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_calle")) + " " + StringHelper.capitalizaString(datos_empresa.get("emp_no_exterior")) +  "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_colonia")) + "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_municipio")) + ", " + StringHelper.capitalizaString(datos_empresa.get("emp_estado"))+ ", " + StringHelper.capitalizaString(datos_empresa.get("emp_pais")) + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + StringHelper.capitalizaString(datos_empresa.get("emp_rfc")), smallFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_calle").toUpperCase()) + " " + (datos_empresa.get("emp_no_exterior").toUpperCase()) +  "\n" + (datos_empresa.get("emp_colonia").toUpperCase()) + "\n" + (datos_empresa.get("emp_municipio").toUpperCase()) + ", " + (datos_empresa.get("emp_estado").toUpperCase())+ ", " + (datos_empresa.get("emp_pais").toUpperCase()) + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + (datos_empresa.get("emp_rfc").toUpperCase()), smallFont));
             cell.setBorder(0);
             cell.setRowspan(6);
             cell.setUseAscender(true);
@@ -140,10 +133,10 @@ public class PdfOrdenDevolucion {
             tableHelper.addCell(cell);
             
             String datos_cadena="";
-            datos_cadena  = StringHelper.capitalizaString(datos_cliente.get("clie_razon_social"));
-            datos_cadena+=" \n"+StringHelper.capitalizaString(datos_cliente.get("clie_rfc"));
+            datos_cadena  = (datos_cliente.get("clie_razon_social").toUpperCase());
+            datos_cadena+=" \n" + (datos_cliente.get("clie_rfc").toUpperCase());
             
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_cadena), smallFont));
+            cell = new PdfPCell(new Paragraph((datos_cadena.toUpperCase()), smallFont));
             cell.setBorder(0);
             cell.setRightIndent(10);
             cell.setFixedHeight(35);
@@ -187,7 +180,7 @@ public class PdfOrdenDevolucion {
                 
                 //CADENA ORIGINAL --> BeanFromCFD (getCadenaOriginal)
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos.get(0).get("observaciones")), smallFont));
+                cell = new PdfPCell(new Paragraph((datos.get(0).get("observaciones").toUpperCase()), smallFont));
                 cell.setBorder(0);
                 table2.addCell(cell); 
             }
@@ -542,7 +535,7 @@ public class PdfOrdenDevolucion {
                 
                 String descripcion = map.get("nombre_producto");
                 descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -550,7 +543,7 @@ public class PdfOrdenDevolucion {
                 cell.setBorderWidthTop(b);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad")).toUpperCase()), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -559,7 +552,7 @@ public class PdfOrdenDevolucion {
                 table.addCell(cell);
 
                 //PRESENTACION
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("presentacion"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("presentacion")).toUpperCase()), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -614,7 +607,7 @@ public class PdfOrdenDevolucion {
                 
                 if(map.get("importe")!=null){
                     if(!map.get("importe").equals("0.00")){
-                        cell = new PdfPCell(new Paragraph(moneda_simbolo+" " + StringHelper.AgregaComas(map.get("importe")), smallFont));
+                        cell = new PdfPCell(new Paragraph(moneda_simbolo+" " + StringHelper.AgregaComas(map.get("importe").toUpperCase()), smallFont));
                         cell.setRightIndent(3);
                         cell.setUseAscender(true);
                         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
