@@ -35,13 +35,7 @@ public class TimeHelper {
 		String fechasalida = sdf.format(new Date());				
 		return fechasalida;
 	}
-	
-	public static String getFechaActualYMD3(Date fecha){
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String fechasalida = sdf.format(fecha);				
-		return fechasalida;
-	}
-	
+
 	public static String getFechaActualYMDH(){
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String fechasalida = sdf.format(new Date());				
