@@ -1,17 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.common.obj;
+
 
 import com.agnux.common.helpers.DatagridHelper;
 import java.util.LinkedHashMap;
 import javax.servlet.http.HttpServletRequest;
 
-/**
- *
- * @author fmora
- */
+
 public class ResourceProject {
     
     private String layoutheader = "./vm/layouts/header.vm";
@@ -51,17 +45,10 @@ public class ResourceProject {
         int total = items_por_pagina * pag_start;
         total = total - items_por_pagina;
         return total;
-    }
-    
-    
-    
+    }    
+
     public String getUrl(HttpServletRequest httpservletrequest){
-        //String scheme = httpservletrequest.getScheme();
-        //String serverName = httpservletrequest.getServerName();
-        //int serverPort = httpservletrequest.getServerPort();
         String contextPath = httpservletrequest.getContextPath();
-        //return scheme+"://"+serverName+":"+serverPort+contextPath;
-        
         return contextPath;
     }
     
