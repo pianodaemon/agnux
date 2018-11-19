@@ -222,78 +222,7 @@ public class StringHelper {
 	}
 	return res;
     }
-    
-    
-    //convierte una cadena a muyusculas
-    public static String getMayuscula(String car){
-        String carMay = car;
-		if(car.equals("á"))
-			carMay = "Á";
-        if(car.equals("a"))
-            carMay = "A";
-        if(car.equals("b"))
-            carMay = "B";
-        if(car.equals("c"))
-            carMay = "C";
-        if(car.equals("d"))
-            carMay = "D";
-        if(car.equals("e"))
-            carMay = "E";
-        if(car.equals("é"))
-            carMay = "É";
-        if(car.equals("f"))
-            carMay = "F";
-        if(car.equals("g"))
-            carMay = "G";
-        if(car.equals("h"))
-            carMay = "H";
-        if(car.equals("i"))
-            carMay = "I";
-        if(car.equals("í"))
-            carMay = "Í";
-        if(car.equals("j"))
-            carMay = "J";
-        if(car.equals("k"))
-            carMay = "K";
-        if(car.equals("l"))
-            carMay = "L";
-        if(car.equals("m"))
-            carMay = "M";
-        if(car.equals("n"))
-            carMay = "N";
-        if(car.equals("�"))
-            carMay = "�";
-        if(car.equals("o"))
-            carMay = "O";
-        if(car.equals("ó"))
-            carMay = "Ó";
-        if(car.equals("p"))
-            carMay = "P";
-        if(car.equals("q"))
-            carMay = "Q";
-        if(car.equals("r"))
-            carMay = "R";
-        if(car.equals("s"))
-            carMay = "S";
-        if(car.equals("t"))
-            carMay = "T";
-        if(car.equals("u"))
-            carMay = "U";
-        if(car.equals("ú"))
-            carMay = "Ú";
-        if(car.equals("v"))
-            carMay = "V";
-        if(car.equals("w"))
-            carMay = "W";
-        if(car.equals("x"))
-            carMay = "X";
-        if(car.equals("y"))
-            carMay = "Y";
-        if(car.equals("z"))
-            carMay = "Z";
-        return carMay;
-    }
-    
+
     //agrega comas a una cantidad en numer
     public static String AgregaComas(String num) {
 	String cadena_retorno="";
@@ -347,8 +276,7 @@ public class StringHelper {
         return cadena_retorno;
     }
     
-    
-    
+
     public static String isNullString(String str){
         if(str.equals(null)){
             str = "";
@@ -358,19 +286,7 @@ public class StringHelper {
         }
         return str;
     }
-    
-    public static String capitalizaString(String cadena){
-        String [] temp;
-        String retorno="";
-        
-	temp = cadena.split("");
-	for(String i:Arrays.asList(temp))
-            retorno += getMayuscula(i);
 
-        return retorno;
-    }
-    
-    
     public static String remueve_tildes(String input) {
         // Cadena de caracteres original a sustituir.
         String original = "áàäéèëíìïóòöúùuñÁÀÄÉÈËÍÌÏÓÒÖÚÙÜÑçÇ";

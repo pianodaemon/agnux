@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
 
 import com.agnux.common.helpers.CodigoQRHelper;
 import com.agnux.common.helpers.FileHelper;
@@ -25,10 +22,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author agnux
- */
+
+
 public final class PdfCfdiNomina {
        //--variables para pdf--
     private  GralInterfaceDao gralDao;
@@ -66,8 +61,7 @@ public final class PdfCfdiNomina {
     private String facha_comprobante;
     private String fachaTimbrado;
     private String noCertificadoSAT;
-    
-    //private ArrayList<HashMap<String, String>> rows;
+
     private ArrayList<LinkedHashMap<String,String>> rows;
     private ArrayList<LinkedHashMap<String,String>> rowsd;
     private ArrayList<LinkedHashMap<String,String>> rows_horas_extras;
@@ -332,7 +326,7 @@ public final class PdfCfdiNomina {
             PdfPCell cellEmp;
             
             //RAZON SOCIAL
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmpresa_emisora().toUpperCase()),largeBoldFont));
+            cellEmp = new PdfPCell(new Paragraph((this.getEmpresa_emisora().toUpperCase()),largeBoldFont));
             cellEmp.setBorder(0);
             cellEmp.setUseAscender(true);
             cellEmp.setHorizontalAlignment(Element.ALIGN_CENTER);
