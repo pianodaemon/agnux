@@ -1,6 +1,6 @@
 import enum
 import sys
-from misc.magic import UMT
+from misc.helperstr import UMT
 
 
 class FatalError(Exception):
