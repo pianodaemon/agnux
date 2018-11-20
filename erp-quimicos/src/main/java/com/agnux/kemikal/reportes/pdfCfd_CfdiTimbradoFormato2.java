@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.CodigoQRHelper;
 import com.agnux.common.helpers.FileHelper;
 import com.agnux.kemikal.interfacedaos.GralInterfaceDao;
@@ -23,12 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 04/mayo/2013
- */
+
 public class pdfCfd_CfdiTimbradoFormato2 {
    //--variables para pdf--
     private  GralInterfaceDao gralDao;
@@ -243,11 +236,10 @@ public class pdfCfd_CfdiTimbradoFormato2 {
     
     
     public void ViewPDF() throws URISyntaxException, FileNotFoundException, Exception {
-        Font smallsmall = new Font(Font.FontFamily.HELVETICA,5,Font.NORMAL,BaseColor.BLACK);
-        Font smallFont6 = new Font(Font.FontFamily.HELVETICA,6,Font.NORMAL,BaseColor.BLACK);
+
         Font smallFont = new Font(Font.FontFamily.HELVETICA,7,Font.NORMAL,BaseColor.BLACK);
         Font smallBoldFont7= new Font(Font.FontFamily.HELVETICA,7,Font.BOLD,BaseColor.BLACK);
-        Font smallBoldFont = new Font(Font.FontFamily.HELVETICA,8,Font.BOLD,BaseColor.BLACK);
+
         Font largeBoldFont = new Font(Font.FontFamily.HELVETICA,10,Font.BOLD,BaseColor.BLACK);
         PdfPTable tableHeader;
         PdfPCell cellHeader;
@@ -290,7 +282,7 @@ public class pdfCfd_CfdiTimbradoFormato2 {
             PdfPCell cellEmp;
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmpresa_emisora().toUpperCase()),largeBoldFont));
+            cellEmp = new PdfPCell(new Paragraph((this.getEmpresa_emisora().toUpperCase()),largeBoldFont));
             cellEmp.setBorder(0);
             cellEmp.setUseAscender(true);
             cellEmp.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -299,7 +291,7 @@ public class pdfCfd_CfdiTimbradoFormato2 {
             //celda vacia
             cellEmp = new PdfPCell(new Paragraph("R.F.C: "+this.getEmisora_rfc().toUpperCase(), smallBoldFont7));
             cellEmp.setBorder(0);
-            //cellEmp.setFixedHeight(5);
+
             cellEmp.setHorizontalAlignment(Element.ALIGN_CENTER);
             tableDatosEmpresa.addCell(cellEmp);
             
