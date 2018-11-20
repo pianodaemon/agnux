@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.controllers;
+
 
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.cfdi.BeanCancelaCfdi;
@@ -188,11 +185,7 @@ public class NotasCreditoController {
         
         return jsonretorno;
     }
-    
-    
-    
-    
-    
+
     //Buscador de clientes
     @RequestMapping(method = RequestMethod.POST, value="/get_buscador_clientes.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, String>>> get_buscador_clientesJson(
@@ -289,11 +282,7 @@ public class NotasCreditoController {
         
         return jsonretorno;
     }
-    
-    
-    
-    
-    
+
     //Buscador de Remisiones del Cliente
     @RequestMapping(method = RequestMethod.POST, value="/getFacturasCliente.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, String>>> getFacturasClienteJson(
@@ -308,10 +297,7 @@ public class NotasCreditoController {
         
         return jsonretorno;
     }
-    
-    
-    
-    
+
     //Obtener datos de una factura en Especifico a partir del Serie Folio
     @RequestMapping(method = RequestMethod.POST, value="/getDatosFactura.json")
     public @ResponseBody HashMap<String,ArrayList<HashMap<String, String>>> getDatosFacturaJson(
@@ -322,31 +308,11 @@ public class NotasCreditoController {
         ) {
         
         HashMap<String,ArrayList<HashMap<String, String>>> jsonretorno = new HashMap<String,ArrayList<HashMap<String, String>>>();
-        /*
-        HashMap<String, String> userDat = new HashMap<String, String>();
-        
-        //decodificar id de usuario
-        Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-        userDat = this.getHomeDao().getUserById(id_usuario);
-        
-        Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
-        Integer id_sucursal = Integer.parseInt(userDat.get("sucursal_id"));
-        */
         jsonretorno.put("Factura", this.getFacdao().getNotasCredito_DatosFactura(id_cliente, serie_folio));
         
         return jsonretorno;
     }
 
-
-
-
-
-
-
-
-    
-    
-    
     //edicion y nuevo
     @RequestMapping(method = RequestMethod.POST, value="/edit.json")
     public @ResponseBody HashMap<String, String> editJson(
@@ -509,15 +475,11 @@ public class NotasCreditoController {
         
         //Obtener tipo de facturacion
         String tipo_facturacion = this.getFacdao().getTipoFacturacion(id_empresa);
-        
-        if(tipo_facturacion.equals("cfd")){
-            dirSalidas = this.getGralDao().getCfdEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-        }else{
-            if(tipo_facturacion.equals("cfditf")){
-                dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-            }else{
-                dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
-            }
+
+        if (tipo_facturacion.equals("cfditf")) {
+            dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
+        } else {
+            dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
         }
         
         String nombre_archivo = this.getFacdao().getRefIdNotaCredito(id);
@@ -631,8 +593,6 @@ public class NotasCreditoController {
         return jsonretorno;
     }
     
-    
-    
     //Descarga pdf de la Nota de Credito generado anteriormente
     @RequestMapping(value = "/getDescargarPdfNotaCredito/{id_nota_credito}/{iu}/out.json", method = RequestMethod.GET ) 
     public ModelAndView getDescargaPdfFacturaJson(
@@ -655,18 +615,13 @@ public class NotasCreditoController {
         //obtener tipo de facturacion
         String tipo_facturacion = this.getFacdao().getTipoFacturacion(id_empresa);
         
-        if(tipo_facturacion.equals("cfd")){
-            dirSalidas = this.getGralDao().getCfdEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-        }else{
-            if(tipo_facturacion.equals("cfditf")){
-                dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-            }else{
-                dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
-            }
+        if (tipo_facturacion.equals("cfditf")) {
+            dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
+        } else {
+            dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
         }
         
-        nombre_archivo = this.getFacdao().getRefIdNotaCredito(id_nota_credito);
-        
+        nombre_archivo = this.getFacdao().getRefIdNotaCredito(id_nota_credito);        
         
         String fileout = dirSalidas + "/" + nombre_archivo +".pdf";
         
@@ -684,11 +639,7 @@ public class NotasCreditoController {
         return null;
         
     }
-    
-    
-    
-    
-    
+
     //Descarga xml de la Nota de Credito
     @RequestMapping(value = "/getDescargarXmlNotaCredito/{id_nota_credito}/{iu}/out.json", method = RequestMethod.GET ) 
     public ModelAndView getDescargaXmlFacturaJson(
@@ -708,29 +659,20 @@ public class NotasCreditoController {
         userDat = this.getHomeDao().getUserById(id_usuario);
         Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
         
-        
-        
         //obtener tipo de facturacion
         String tipo_facturacion = this.getFacdao().getTipoFacturacion(id_empresa);
         
-        if(tipo_facturacion.equals("cfd")){
-            dirSalidas = this.getGralDao().getCfdEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-        }else{
-            if(tipo_facturacion.equals("cfditf")){
-                dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-            }else{
-                dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
-            }
+        if (tipo_facturacion.equals("cfditf")) {
+            dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
+        } else {
+            dirSalidas = this.getGralDao().getCfdiSolicitudesDir() + "out/";
         }
         
         nombre_archivo = this.getFacdao().getRefIdNotaCredito(id_nota_credito);
         
         //ruta completa del archivo a descargar
         String fileout = dirSalidas + "/" + nombre_archivo +".xml";
-        
-        
-        
-        //System.out.println("Recuperando archivo: " + fileout);
+
         File file = new File(fileout);
         
         if (file.exists()){
@@ -742,22 +684,7 @@ public class NotasCreditoController {
             response.setHeader("Content-Disposition","attachment; filename=\"" + file.getName() +"\"");
             FileCopyUtils.copy(bis, response.getOutputStream());  	
             response.flushBuffer();
-            
         }
-     
         return null;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 }
