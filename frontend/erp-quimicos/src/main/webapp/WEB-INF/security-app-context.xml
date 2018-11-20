@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans:beans xmlns="http://www.springframework.org/schema/security" 
-xmlns:beans="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        
-       xsi:schemaLocation="http://www.springframework.org/schema/beans 
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/security
        http://www.springframework.org/schema/security/spring-security-3.1.xsd
@@ -394,63 +394,11 @@ xmlns:beans="http://www.springframework.org/schema/beans"
         />
         <logout logout-url="/controllers/home/logout.agnux" delete-cookies="JSESSIONID"  logout-success-url="/index.jsp"  />
     </http>
-    
-    
-    
-    
+
     <authentication-manager>
         <authentication-provider>
             <jdbc-user-service data-source-ref="dataSource"/>
         </authentication-provider>
     </authentication-manager>
-    
-    
-    
-    
-    <!--
-    		users-by-username-query="SELECT username,password,enabled FROM erp_users WHERE username = ?"
-		authorities-by-username-query="" />
-            Especifica el proceso de autenticación mediante un formulario:
-            [login-page]: URL del formulario de autenticación.
-            [authentication-failure-url]: URL de la página en caso la autenticación falle. 
-            [login-processing-url]: URL hacia el cual la autenticación será procesada. 
-            [default-target-url]: URL hacia el cual se redirigirá el control luego de un login exitoso		
-    -->
-    <!--
-    <security:form-login 
-            login-page="/login.jsp" 
-            default-target-url="/public/mostrarFormulario.htm" 
-            authentication-failure-url="/loginerror.jsp"/>
-            -->
 
-    <!--  Especifica el tipo de autenticación:-->
-    <!--<security:http-basic />-->
-
-    <!--
-            Especifica el tratamiento para los fines de sesión o logouts:
-            [invalidate-session]: Si el proceso de logout debe de terminar la sesión(default=true) 
-            [logout-url]: URL que determina el fin de sesión. 
-            [logout-success-url]: URL del recurso que será mostrado una vez terminada la sesión.
-    -->
-    <!--
-    <security:logout 
-            invalidate-session="true" 
-            logout-url="/public/terminarSesion.htm"
-            logout-success-url="/logout.jsp"  />
-    <security:remember-me/>
-    --> 
-    
-    
-    
-    <!--
-    <authentication-manager>
-        <authentication-provider>
-            <user-service>
-                <user name="gpmarsan" password="marsan" authorities="ROLE_USER" />
-                <user name="noe" password="noe" authorities="ROLE_ADMIN" />
-            </user-service>
-        </authentication-provider>
-    </authentication-manager>
-    -->
-    
 </beans:beans>

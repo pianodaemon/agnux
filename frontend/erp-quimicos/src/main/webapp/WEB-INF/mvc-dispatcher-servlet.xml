@@ -14,6 +14,12 @@
 
     <mvc:annotation-driven />
 
+    <bean id="propertyPlaceholderConfigurer"
+          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <property name="searchSystemEnvironment" value="true" />
+    </bean>
+
     <bean id="velocityConfig" class="org.springframework.web.servlet.view.velocity.VelocityConfigurer">
         <property name="resourceLoaderPath" value="/"/>
     </bean>
@@ -39,9 +45,9 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver" />
-        <property name="url" value="jdbc:postgresql://localhost:5432/kupsa" />
-        <property name="username" value="us_kupsa" />
-        <property name="password" value="kupsa" />
+        <property name="url" value="#{systemEnvironment['MS_DBMS_URL']}" />
+        <property name="username" value="#{systemEnvironment['MS_DBMS_USER']}" />
+        <property name="password" value="#{systemEnvironment['MS_DBMS_PASS']}" />
     </bean>
 
     <bean name="beanFacturadorCfdi" class="com.agnux.cfdi.BeanFacturadorCfdi"></bean>
