@@ -124,8 +124,6 @@ public class FacCancelacionController {
         
         String userId = String.valueOf(user.getUserId());
         
-        //System.out.println("id_de_usuario: "+userId);
-        
         String codificado = Base64Coder.encodeString(userId);
         
         //id de usuario codificado
@@ -300,13 +298,6 @@ public class FacCancelacionController {
         
         return jsonretorno;
     }
-    
-
-    
-    
-    
-    
-    
 
     //cancelacion de facturas
     @RequestMapping(method = RequestMethod.POST, value = "/cancelar_factura.json")
@@ -345,7 +336,9 @@ public class FacCancelacionController {
         req.args(kwargs);
 
         try {
-            ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
+            String[] address = this.getGralDao().getMicroserviceFiscalHost();
+
+            ServerReply reply = bbgumProxy.uploadBuff(address[0], new Integer(address[1]), req.getJson().getBytes());
             if (reply.getReplyCode() == 0) {
                 String msg = "core reply code: " + reply.getReplyCode();
                 Logger.getLogger(PrefacturasController.class.getName()).log(

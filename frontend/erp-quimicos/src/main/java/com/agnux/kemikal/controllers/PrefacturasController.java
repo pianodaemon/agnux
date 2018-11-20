@@ -3,9 +3,7 @@ package com.agnux.kemikal.controllers;
 
 
 import com.agnux.cfd.v2.Base64Coder;
-import com.agnux.cfdi.BeanFacturadorCfdi;
 import com.agnux.cfdi.LegacyRequest;
-import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.helpers.TimeHelper;
 import com.agnux.common.obj.DataPost;
@@ -53,12 +51,6 @@ public class PrefacturasController {
     private GralInterfaceDao gralDao;
 
     @Autowired
-    @Qualifier("beanFacturadorCfdi")
-    BeanFacturadorCfdi bfcfdi;
-    @Autowired
-    @Qualifier("beanFacturadorCfdiTf")
-    BeanFacturadorCfdiTimbre bfCfdiTf;
-    @Autowired
     @Qualifier("daoFacturas")
     private FacturasInterfaceDao facdao;
     @Autowired
@@ -79,14 +71,6 @@ public class PrefacturasController {
 
     public FacturasInterfaceDao getFacdao() {
         return facdao;
-    }
-
-    public BeanFacturadorCfdi getBfCfdi() {
-        return bfcfdi;
-    }
-
-    public BeanFacturadorCfdiTimbre getBfCfdiTf() {
-        return bfCfdiTf;
     }
 
     @RequestMapping(value = "/startup.agnux")
@@ -634,7 +618,9 @@ public class PrefacturasController {
                     req.args(kwargs);
 
                     try {
-                        ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
+                        String[] address = this.getGralDao().getMicroserviceFiscalHost();
+
+                        ServerReply reply = bbgumProxy.uploadBuff(address[0], new Integer(address[1]), req.getJson().getBytes());
                         String msg = "core reply code: " + reply.getReplyCode();
                         if (reply.getReplyCode() == 0) {
                             Logger.getLogger(PrefacturasController.class.getName()).log(

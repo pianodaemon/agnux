@@ -1,5 +1,6 @@
 package com.agnux.kemikal.controllers;
 
+
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.cfdi.LegacyRequest;
 import com.agnux.common.helpers.FileHelper;
@@ -44,6 +45,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.SessionAttributes;
+
 
 @Controller
 @SessionAttributes({"user"})
@@ -228,7 +230,6 @@ public class CarterasController {
 
         //decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-        //System.out.println("id_usuario: "+id_usuario);
 
         userDat = this.getHomeDao().getUserById(id_usuario);
 
@@ -311,7 +312,6 @@ public class CarterasController {
 
         //decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user_cod));
-        //System.out.println("id_usuario: "+id_usuario);
 
         userDat = this.getHomeDao().getUserById(id_usuario);
         Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
@@ -501,7 +501,9 @@ public class CarterasController {
             BbgumProxy bbgumProxy = new BbgumProxy();
 
             try {
-                ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
+                String[] address = this.getGralDao().getMicroserviceFiscalHost();
+
+                ServerReply reply = bbgumProxy.uploadBuff(address[0], new Integer(address[1]), req.getJson().getBytes());
                 String msg = "core reply code: " + reply.getReplyCode();
                 if (reply.getReplyCode() == 0) {
                     Logger.getLogger(CarterasController.class.getName()).log(

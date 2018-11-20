@@ -1,19 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.interfacedaos;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 16/03/2012
- */
+
 public interface GralInterfaceDao {
     
     public String getJvmTmpDir();
@@ -35,7 +27,7 @@ public interface GralInterfaceDao {
     public String getZebraInDir();
     public String getZebraOutDir();
     public String getZebraProcessingDir();
-    
+    public String[] getMicroserviceFiscalHost();
     public String getEmpresa_IncluyeModContable(Integer id_empresa);
     public String getEmpresa_NivelCta(Integer id_empresa);
     

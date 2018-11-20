@@ -23,7 +23,12 @@ public class GralSpringDao implements GralInterfaceDao{
     public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
-    
+
+    @Override
+    public String[] getMicroserviceFiscalHost() {
+        return System.getenv("MS_FISCAL_HOST").split(":");
+    }
+
     @Override
     public String getCfdEmitidosDir() {
         String cfdemitidosdir = System.getenv("MS_BASE_DIR") + "/" + "resources" + "/"+"cfd" + "/"+"emitidos" + "/";
@@ -3235,6 +3240,4 @@ public class GralSpringDao implements GralInterfaceDao{
         );
         return dato_puesto;
     }
-    
-    
 }
