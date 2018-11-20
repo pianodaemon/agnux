@@ -138,10 +138,7 @@ public class HomeController {
     public void setValueDate(String valueDate) {
         this.valueDate = valueDate;
     }
-    
-    
-    
-    
+
     @RequestMapping(value="/startup.agnux")
     public ModelAndView startUp(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -229,16 +226,8 @@ public class HomeController {
         
         //Serializar el arreglo
         extra_data_array = StringUtils.join(arreglo, ",");
-        
-        //System.out.println("antes de jdbc data_string:"+data_string+"     extra_data_array:"+extra_data_array);
-        String retorno = this.jobTiposMoneda(data_string, extra_data_array);
-        /*
-        if(retorno.equals("1")){
-            System.out.println("despues de jdbc data_string:"+data_string+"     extra_data_array:"+extra_data_array);
-        }else{
-            System.out.println("despues de jdbc data_string:"+data_string+"     extra_data_array:"+extra_data_array);
-        }
-        */
+
+        this.jobTiposMoneda(data_string, extra_data_array);
     }
     
     public void getXmlV2(Integer id_url, String urlString){

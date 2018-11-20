@@ -512,12 +512,7 @@ public class FacturasController {
         if(tipo_facturacion.equals("cfditf")){
             dirSalidas = this.getGralDao().getCfdiTimbreEmitidosDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa);
         }
-        
-        //nombre_archivo = this.getFacdao().getSerieFolioFactura(id_factura);
-        
-        //String generado = this.getFacdao().verifica_fac_docs_salidas( id_factura );
-        //String dirSalidasBuzonFiscal = this.getGralDao().getCfdiSolicitudesDir() + "out";
-        
+
         String fileout = dirSalidas +"/"+ serie_folio +"."+extension;
         
         System.out.println("Ruta: " + fileout);
@@ -529,13 +524,7 @@ public class FacturasController {
         jsonretorno.put("descargar", existe);
         
         return jsonretorno;
-    }
-    
-    
-    
-    
-    
-    
+    }    
     
     //Descarga pdf de factura generado anteriormente
     @RequestMapping(value = "/get_descargar_pdf_factura/{id_factura}/{iu}/out.json", method = RequestMethod.GET ) 
@@ -587,17 +576,9 @@ public class FacturasController {
         FileCopyUtils.copy(bis, response.getOutputStream());  	
         response.flushBuffer();
         
-        return null;
-        
-    }
-    
-    
-    
-    
-    
-    
-    
-    
+        return null;        
+    }    
+
     //Descarga xml de factura
     @RequestMapping(value = "/get_descargar_xml_factura/{id_factura}/{iu}/out.json", method = RequestMethod.GET ) 
     public ModelAndView getDescargaXmlFacturaJson(
@@ -656,16 +637,7 @@ public class FacturasController {
      
         return null;
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     //Reconstruir el pdf de la factura para CFD y CFDI con Tiembrado Fiscal
     @RequestMapping(method = RequestMethod.POST, value="/getReconstruirPdfFactura.json")
     public @ResponseBody HashMap<String,String> getReconstruirPdfFacturaJson(

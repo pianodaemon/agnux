@@ -448,59 +448,6 @@ public class FacDevolucionesController {
                     //Aqui se obtienen los parametros de la facturacion, nos intersa el tipo de formato para el pdf de la Nota de Credito
                     parametros = this.getFacdao().getFac_Parametros(id_empresa, id_sucursal);
                     
-                    //tipo facturacion CFDI
-                    if(tipo_facturacion.equals("cfdi")){
-                        System.out.println("::::::::::::Tipo CFDI-Conector Fiscal con Diverza:::::::::::::::::..");
-                        
-                        //Pac 0=Sin PAC, 1=Diverza, 2=ServiSim
-                        if(!noPac.equals("0") && !noPac.equals("2")){
-                            //Solo se permite generar Factura por Conector Fiscal con Diverza
-                            
-                            data_string="";
-                            extra_data_array = "'sin datos'";
-                            command_selected="genera_nota_credito_cfdi";
-
-                            String Serie=this.getGralDao().getSerieNotaCredito(id_empresa, id_sucursal);
-                            String Folio=this.getGralDao().getFolioNotaCredito(id_empresa, id_sucursal);
-                            rfcEmisor = this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-
-                            //lista de conceptos para la Nota de Credito cfdi
-                            listaConceptos = this.getFacdao().getNotaCreditoCfdi_ListaConceptos(id_nota_credito);
-                            dataCliente = this.getFacdao().getNotaCreditoCfd_Cfdi_Datos(id_nota_credito);
-
-                            //obtiene datos extras para el cfdi
-                            datosExtras = this.getFacdao().getNotaCreditoCfdi_DatosExtras(id_nota_credito, Serie, Folio);
-                            impTrasladados = this.getFacdao().getNotaCreditoCfdi_ImpuestosTrasladados(id_nota_credito);
-                            impRetenidos = this.getFacdao().getNotaCreditoCfdi_ImpuestosRetenidos(id_nota_credito);
-                            //leyendas = this.getFacdao().getLeyendasEspecialesCfdi(id_empresa);
-
-                            dataCliente.put("comprobante_attr_tc", String.valueOf(datosExtras.get("tipo_cambio")));
-                            dataCliente.put("comprobante_attr_moneda", String.valueOf(datosExtras.get("nombre_moneda")));
-
-                            //generar archivo de texto para cfdi
-                            this.getBfcfdi().init(dataCliente, listaConceptos,impRetenidos,impTrasladados, leyendas, proposito,datosExtras, id_empresa, id_sucursal);
-                            this.getBfcfdi().start();
-                            
-                            
-                            //aqui se debe actializar el registro
-                            data_string = app_selected+"___"+command_selected+"___"+id_usuario+"___"+id_nota_credito+"___"+Serie+Folio+"___"+fac_saldado+"___"+id_cliente;
-                            
-                            actualizo = this.getFacdao().selectFunctionForFacAdmProcesos(data_string, extra_data_array);
-                            
-                            //actualiza el folio de la Nota de Credito
-                            this.getGralDao().actualizarFolioNotaCredito(id_empresa, id_sucursal);
-
-                            jsonretorno.put("folio",Serie+Folio);
-                            valorRespuesta="true";
-                            msjRespuesta = "La devoluci&oacute;n se realiz&oacute; con &eacute;xito\nSe gener&oacute; la Nota de Cr&eacute;dito: "+serieFolio;
-                        }else{
-                            valorRespuesta="false";
-                            msjRespuesta="No se puede Timbrar la Nota de Cr&eacute;dito por Conector Fiscal con el PAC actual.\nVerifique la configuraci&oacute;n del tipo de Facturaci&oacute;n y del PAC.";
-                        }
-                    }//termina tipo CFDI
-                    
-                    
-                    
                     //tipo facturacion CFDITF
                     if(tipo_facturacion.equals("cfditf")){
                         System.out.println("::::::::::::Tipo CFDITF:::::::::::::::::..");
