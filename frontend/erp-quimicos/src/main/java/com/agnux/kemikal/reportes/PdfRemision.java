@@ -1,8 +1,5 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
 
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.helpers.n2t;
@@ -13,10 +10,8 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
-/**
- *
- * @author vale
- */
+
+
 public class PdfRemision {
    //--variables para pdf--
     private String imagen;
@@ -163,7 +158,7 @@ public class PdfRemision {
                     datos_remision.get("cliente_rfc");
             
             
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datosCliente), smallFont));
+            cell = new PdfPCell(new Paragraph((datosCliente.toUpperCase()), smallFont));
             cell.setBorder(0);
 //cell.setBorderWidth(1);
             cell.setColspan(2);

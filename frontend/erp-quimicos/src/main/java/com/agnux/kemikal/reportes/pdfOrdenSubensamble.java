@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.StringHelper;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
@@ -12,10 +10,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import org.apache.commons.lang.StringEscapeUtils;
-/**
- *
- * @author paco mora
- */
+
+
+
 public class pdfOrdenSubensamble {
     //--variables para pdf--
     private String imagen;
@@ -60,7 +57,7 @@ public class pdfOrdenSubensamble {
             table.addCell(cell);
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_razon_social")),largeBoldFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_razon_social").toUpperCase()),largeBoldFont));
             cell.setBorder(0);
             cell.setUseAscender(true);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -72,9 +69,8 @@ public class pdfOrdenSubensamble {
             /*decomentar ahorita*/
             cadena = tipo_documento + "&" + 
                     datos_entrada.get("folio") + "&" + 
-                    StringHelper.capitalizaString(datos_empresa.get("emp_municipio")) + ", " + StringHelper.capitalizaString(datos_empresa.get("emp_estado")) + "\n" + datos_entrada.get("fecha");
-                    
-            
+                    (datos_empresa.get("emp_municipio").toUpperCase()) + ", " + (datos_empresa.get("emp_estado").toUpperCase()) + "\n" + datos_entrada.get("fecha");
+         
             cell = new PdfPCell(cepdf.addContent(cadena));
             cell.setBorder(0);
             //cell.setRowspan(13);
@@ -99,7 +95,7 @@ public class pdfOrdenSubensamble {
             table.addCell(cell);
             
             //DOMICILIO FISCAL --> BeanFromCFD (X_emisor, X_domicilio_fiscal)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_calle")) + " " + StringHelper.capitalizaString(datos_empresa.get("emp_no_exterior")) +  "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_colonia")) + "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_municipio")) + ", " + StringHelper.capitalizaString(datos_empresa.get("emp_estado"))+ ", " + StringHelper.capitalizaString(datos_empresa.get("emp_pais")) + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + StringHelper.capitalizaString(datos_empresa.get("emp_rfc")), smallFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_calle").toUpperCase()) + " " + (datos_empresa.get("emp_no_exterior").toUpperCase()) +  "\n" + (datos_empresa.get("emp_colonia").toUpperCase()) + "\n" + (datos_empresa.get("emp_municipio")).toUpperCase() + ", " + (datos_empresa.get("emp_estado")).toUpperCase() + ", " + (datos_empresa.get("emp_pais")).toUpperCase() + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + (datos_empresa.get("emp_rfc")).toUpperCase(), smallFont));
             cell.setBorder(0);
             cell.setRowspan(6);
             cell.setUseAscender(true);
@@ -134,7 +130,7 @@ public class pdfOrdenSubensamble {
                 cell.setBorder(0);
                 table2.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_entrada.get("comentarios")), smallFont));
+                cell = new PdfPCell(new Paragraph((datos_entrada.get("comentarios").toUpperCase()), smallFont));
                 cell.setBorder(0);
                 table2.addCell(cell); 
             }
@@ -357,7 +353,7 @@ public class pdfOrdenSubensamble {
                     String descripcion = map.get("descripcion");
                     descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
                     
-                    cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                    cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                     cell.setIndent(3);
                     cell.setUseDescender(true);
                     cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -367,7 +363,7 @@ public class pdfOrdenSubensamble {
                 }
                 
                 //UNIDAD
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad"))).toUpperCase(), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -450,7 +446,7 @@ public class pdfOrdenSubensamble {
                 if(map.get("descripcion") !=null){
                     String descripcion = map.get("descripcion");
                     descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                    cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                    cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                     cell.setIndent(3);
                     cell.setUseDescender(true);
                     cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -460,7 +456,7 @@ public class pdfOrdenSubensamble {
                 }
                 
                 //UNIDAD
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("utitulo"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("utitulo"))).toUpperCase(), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);

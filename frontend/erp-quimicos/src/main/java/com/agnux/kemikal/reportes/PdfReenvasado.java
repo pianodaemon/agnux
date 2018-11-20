@@ -1,11 +1,5 @@
-/*
- CREADO POR....
- Valentin santos s.
- FECHA:
- 19 De Abril del 2013.
- Mail to:: valentin.vale8490@gmail.com
- */
 package com.agnux.kemikal.reportes;
+
 
 import com.agnux.common.helpers.StringHelper;
 import com.itextpdf.text.BaseColor;
@@ -368,7 +362,7 @@ public class PdfReenvasado {
             PdfPCell cellEmp;
 
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmp_razon_social()),largeBoldFont));
+            cellEmp = new PdfPCell(new Paragraph((this.getEmp_razon_social().toUpperCase()),largeBoldFont));
             cellEmp.setBorderWidthBottom(0);
             cellEmp.setBorderWidthTop(0);
             cellEmp.setBorderWidthRight(0);
@@ -398,16 +392,15 @@ public class PdfReenvasado {
             tableDatosEmpresa.addCell(cellEmp);
 
 
-            String cadena=StringHelper.capitalizaString(this.getEmp_calle()) + " " +
-                    StringHelper.capitalizaString(this.getEmp_no_exterior()) +  "\n" +
-                    StringHelper.capitalizaString(this.getEmp_colonia()) + "\n" +
-                    StringHelper.capitalizaString(this.getEmp_municipio()) + ", " +
-                    StringHelper.capitalizaString(this.getEmp_estado())+ ", " +
-                    StringHelper.capitalizaString(this.getEmp_pais()) + "\nC.P. " +
+            String cadena = (this.getEmp_calle().toUpperCase()) + " " +
+                    (this.getEmp_no_exterior().toUpperCase()) +  "\n" +
+                    (this.getEmp_colonia().toUpperCase()) + "\n" +
+                    (this.getEmp_municipio().toUpperCase()) + ", " +
+                    (this.getEmp_estado().toUpperCase())+ ", " +
+                    (this.getEmp_pais().toUpperCase()) + "\nC.P. " +
                     this.getEmp_cp() + "    R.F.C.: " +
-                    StringHelper.capitalizaString(this.getEmp_rfc());
-          //cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmp_calle()) + " " + StringHelper.capitalizaString(this.getEmp_no_exterior()) +  "\n" + StringHelper.capitalizaString(this.getEmp_colonia()) + "\n" + StringHelper.capitalizaString(this.getEmp_municipio()) + ", " + StringHelper.capitalizaString(this.getEmp_estado())+ ", " + StringHelper.capitalizaString(this.getEmp_pais()) + "\nC.P. " + this.getEmp_cp() + "    R.F.C.: " + StringHelper.capitalizaString(this.getEmp_rfc()), smallFont));
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(cadena), smallFont));
+                    (this.getEmp_rfc().toUpperCase());
+            cellEmp = new PdfPCell(new Paragraph((cadena.toUpperCase()), smallFont));
             cellEmp.setBorderWidthBottom(0);
             cellEmp.setBorderWidthTop(0);
             cellEmp.setBorderWidthRight(0);
@@ -472,7 +465,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getNombre_empleado()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getNombre_empleado().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);
@@ -491,7 +484,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getNombre_almacen()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getNombre_almacen().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);
@@ -510,7 +503,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getCodigo()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getCodigo().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);
@@ -528,7 +521,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getDescripcion()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getDescripcion().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);
@@ -548,7 +541,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getPresentacion()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getPresentacion().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);
@@ -597,7 +590,7 @@ public class PdfReenvasado {
             celltable_datos.setHorizontalAlignment(Element.ALIGN_LEFT);
             table_datos.addCell(celltable_datos);
 
-            celltable_datos = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getUnidad()),smallFont));
+            celltable_datos = new PdfPCell(new Paragraph((this.getUnidad().toUpperCase()),smallFont));
             celltable_datos.setBorderWidthBottom(0);
             celltable_datos.setBorderWidthTop(0);
             celltable_datos.setBorderWidthRight(0);

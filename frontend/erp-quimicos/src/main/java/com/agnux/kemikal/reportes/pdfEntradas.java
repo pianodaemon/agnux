@@ -1,9 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-//este es la Clase para contruir el PDF de Facturas Compras
 package com.agnux.kemikal.reportes;
+
+
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.helpers.n2t;
 import com.itextpdf.text.Image;
@@ -32,11 +29,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- *
- * @author Noe Mtz
- * gpmarsan@gmail.com
- */
+
+
 public class pdfEntradas {
     //--variables para pdf--
     private String imagen;
@@ -96,7 +90,7 @@ public class pdfEntradas {
             table.addCell(cell);
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_razon_social")),largeBoldFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_razon_social").toUpperCase()),largeBoldFont));
             cell.setBorder(0);
             cell.setUseAscender(true);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -119,10 +113,10 @@ public class pdfEntradas {
             /*decomentar ahorita*/
             cadena = tipo_documento + "&" + 
                     datos_entrada.get("folio_entrada") + "&" + 
-                    StringHelper.capitalizaString(datos_empresa.get("emp_municipio")) + ", " + StringHelper.capitalizaString(datos_empresa.get("emp_estado")) + "\n" + datos_entrada.get("fecha_entrada")+"&" + 
-                    StringHelper.capitalizaString(datos_entrada.get("factura")) + "\n" + datos_entrada.get("fecha_fac")+ "&" + 
-                    StringHelper.capitalizaString(datos_entrada.get("orden_compra"))+ "&" + 
-                    StringHelper.capitalizaString(datos_entrada.get("estado"));
+                    (datos_empresa.get("emp_municipio").toUpperCase()) + ", " + (datos_empresa.get("emp_estado").toUpperCase()) + "\n" + datos_entrada.get("fecha_entrada")+"&" + 
+                    (datos_entrada.get("factura").toUpperCase()) + "\n" + datos_entrada.get("fecha_fac")+ "&" + 
+                    (datos_entrada.get("orden_compra").toUpperCase())+ "&" + 
+                    (datos_entrada.get("estado").toUpperCase());
             
             cell = new PdfPCell(cepdf.addContent(cadena));
             cell.setBorder(0);
@@ -155,7 +149,7 @@ public class pdfEntradas {
             */
             
             //DOMICILIO FISCAL --> BeanFromCFD (X_emisor, X_domicilio_fiscal)
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_empresa.get("emp_calle")) + " " + StringHelper.capitalizaString(datos_empresa.get("emp_no_exterior")) +  "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_colonia")) + "\n" + StringHelper.capitalizaString(datos_empresa.get("emp_municipio")) + ", " + StringHelper.capitalizaString(datos_empresa.get("emp_estado"))+ ", " + StringHelper.capitalizaString(datos_empresa.get("emp_pais")) + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + StringHelper.capitalizaString(datos_empresa.get("emp_rfc")), smallFont));
+            cell = new PdfPCell(new Paragraph((datos_empresa.get("emp_calle").toUpperCase()) + " " + (datos_empresa.get("emp_no_exterior").toUpperCase()) +  "\n" + (datos_empresa.get("emp_colonia").toUpperCase()) + "\n" + (datos_empresa.get("emp_municipio").toUpperCase()) + ", " + (datos_empresa.get("emp_estado").toUpperCase())+ ", " + (datos_empresa.get("emp_pais").toUpperCase()) + "\nC.P. " + datos_empresa.get("emp_cp") + "    R.F.C.: " + (datos_empresa.get("emp_rfc").toUpperCase()), smallFont));
             cell.setBorder(0);
             cell.setRowspan(6);
             cell.setUseAscender(true);
@@ -181,20 +175,11 @@ public class pdfEntradas {
             //DATOS CLIENTE --> BeanFromCFD (X_receptor, X_domicilio)
             
             //String datosCliente = StringHelper.capitalizaString(datEmp.getRazon_social_receptor());
-            String datosProveedor = StringHelper.capitalizaString(datos_proveedor.get("prov_razon_social"));
+            String datosProveedor = (datos_proveedor.get("prov_razon_social").toUpperCase());
             
-            /*
-            if(sucursal == null ? "null" != null : !sucursal.equals("null") && (sucursal == null ? "" != null : !sucursal.equals(""))){
-             datosCliente+="\n"+StringHelper.capitalizaString(sucursal);
-            }
-            */
-            
-            
-            
-            datosProveedor+=" \n"+StringHelper.capitalizaString(datos_proveedor.get("prov_calle")) +" "+ datos_proveedor.get("prov_numero") + ", " + StringHelper.capitalizaString(datos_proveedor.get("prov_colonia"))+ ", " + StringHelper.capitalizaString(datos_proveedor.get("prov_municipio")) + ", " + StringHelper.capitalizaString(datos_proveedor.get("prov_estado")) + ", " + StringHelper.capitalizaString(datos_proveedor.get("prov_pais")) + " \nC.P. " + datos_proveedor.get("prov_cp") + "     TEL. "+ datos_proveedor.get("prov_telefono") +  "\nR.F.C.: " + StringHelper.capitalizaString(datos_proveedor.get("prov_rfc"));
-            
-            
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datosProveedor), smallFont));
+            datosProveedor+=" \n" + (datos_proveedor.get("prov_calle").toUpperCase()) +" "+ datos_proveedor.get("prov_numero") + ", " + (datos_proveedor.get("prov_colonia").toUpperCase())+ ", " + (datos_proveedor.get("prov_municipio").toUpperCase()) + ", " + (datos_proveedor.get("prov_estado").toUpperCase()) + ", " + (datos_proveedor.get("prov_pais").toUpperCase()) + " \nC.P. " + datos_proveedor.get("prov_cp") + "     TEL. "+ datos_proveedor.get("prov_telefono") +  "\nR.F.C.: " + (datos_proveedor.get("prov_rfc").toUpperCase());
+
+            cell = new PdfPCell(new Paragraph((datosProveedor.toUpperCase()), smallFont));
             cell.setBorder(0);
             cell.setRightIndent(10);
             cell.setFixedHeight(35);
@@ -207,7 +192,7 @@ public class pdfEntradas {
             tableHelper.addCell(cell);
             
             
-            cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_proveedor.get("prov_contacto")),smallFont));
+            cell = new PdfPCell(new Paragraph((datos_proveedor.get("prov_contacto").toUpperCase()),smallFont));
             cell.setBorder(0);
             cell.setRightIndent(10);
             tableHelper.addCell(cell);
@@ -294,7 +279,7 @@ public class pdfEntradas {
                 
                 //CADENA ORIGINAL --> BeanFromCFD (getCadenaOriginal)
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(datos_entrada.get("observaciones")), smallFont));
+                cell = new PdfPCell(new Paragraph((datos_entrada.get("observaciones").toUpperCase()), smallFont));
                 cell.setBorder(0);
                 table2.addCell(cell); 
             }
@@ -675,7 +660,7 @@ public class pdfEntradas {
                     }
                     
                     //descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                    cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion)+etiqueta_ieps, smallFont));
+                    cell = new PdfPCell(new Paragraph((descripcion.toUpperCase())+etiqueta_ieps, smallFont));
                     cell.setIndent(3);
                     cell.setUseDescender(true);
                     cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -685,7 +670,7 @@ public class pdfEntradas {
                 }
                 
                 //UNIDAD
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad"))).toUpperCase(), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
@@ -694,7 +679,7 @@ public class pdfEntradas {
                 table.addCell(cell);
                 
                 //PRESENTACION
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("presentacion"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("presentacion"))).toUpperCase(), smallFont));
                 cell.setIndent(3);
                 cell.setUseDescender(true);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);

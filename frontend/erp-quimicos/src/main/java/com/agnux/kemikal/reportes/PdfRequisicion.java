@@ -300,7 +300,7 @@ public final class PdfRequisicion {
             PdfPCell cellEmp;
             
             //RAZON SOCIAL --> BeanFromCFD (X_emisor)
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmp_razon_social()),largeBoldFont));
+            cellEmp = new PdfPCell(new Paragraph((this.getEmp_razon_social().toUpperCase()),largeBoldFont));
             cellEmp.setBorderWidthBottom(0);
             cellEmp.setBorderWidthTop(0);
             cellEmp.setBorderWidthRight(0);
@@ -328,7 +328,7 @@ public final class PdfRequisicion {
             tableDatosEmpresa.addCell(cellEmp);
             
             
-            cellEmp = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getEmp_calle()) + " " + StringHelper.capitalizaString(this.getEmp_no_exterior()) +  "\n" + StringHelper.capitalizaString(this.getEmp_colonia()) + "\n" + StringHelper.capitalizaString(this.getEmp_municipio()) + ", " + StringHelper.capitalizaString(this.getEmp_estado())+ ", " + StringHelper.capitalizaString(this.getEmp_pais()) + "\nC.P. " + this.getEmp_cp() + "    R.F.C.: " + StringHelper.capitalizaString(this.getEmp_rfc()), smallFont));
+            cellEmp = new PdfPCell(new Paragraph((this.getEmp_calle().toUpperCase()) + " " + (this.getEmp_no_exterior().toUpperCase()) +  "\n" + (this.getEmp_colonia().toUpperCase()) + "\n" + (this.getEmp_municipio().toUpperCase()) + ", " + (this.getEmp_estado().toUpperCase())+ ", " + (this.getEmp_pais().toUpperCase()) + "\nC.P. " + this.getEmp_cp() + "    R.F.C.: " + (this.getEmp_rfc().toUpperCase()), smallFont));
             cellEmp.setBorderWidthBottom(0);
             cellEmp.setBorderWidthTop(0);
             cellEmp.setBorderWidthRight(0);
@@ -435,7 +435,7 @@ public final class PdfRequisicion {
                 
                 //CADENA ORIGINAL --> BeanFromCFD (getCadenaOriginal)
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(this.getObservaciones()), smallFont));
+                cell = new PdfPCell(new Paragraph((this.getObservaciones().toUpperCase()), smallFont));
                 cell.setBorder(0);
                 table2.addCell(cell); 
             }
@@ -719,12 +719,12 @@ public final class PdfRequisicion {
                 
                 String descripcion = map.get("titulo");
                 descripcion =  StringEscapeUtils.unescapeHtml(descripcion);
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(descripcion), smallFont));
+                cell = new PdfPCell(new Paragraph((descripcion.toUpperCase()), smallFont));
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(cell);
                 
-                cell = new PdfPCell(new Paragraph(StringHelper.capitalizaString(esteAtributoSeDejoNulo(map.get("unidad"))), smallFont));
+                cell = new PdfPCell(new Paragraph((esteAtributoSeDejoNulo(map.get("unidad"))).toUpperCase(), smallFont));
                 cell.setHorizontalAlignment(Element.ALIGN_LEFT);
                 cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
                 table.addCell(cell);
