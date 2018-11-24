@@ -53,32 +53,14 @@ def listener_process(queue, configurer, debug=False):
 
 def fetch_base_dirs():
     '''Conforms base directories for microservice'''
-    d = {}
 
-    d['RESOURCES_DIR'] = os.path.join(os.environ.get("MS_BASE_DIR"),
-                                      'resources')
-    if not os.path.isdir(d['RESOURCES_DIR']):
-        raise Exception('We can not go ahead without a resource directory')
-
-    d['PROFILES_DIR'] = os.path.join(d['RESOURCES_DIR'],
-                                     'profiles')
-    if not os.path.isdir(d['PROFILES_DIR']):
-        raise Exception('We can not go ahead without a profile directory')
 
     return d
 
 
 if __name__ == "__main__":
 
-    debug = eval('logging.' + os.environ.get('MS_DEBUG'))
-    base_dirs = fetch_base_dirs()
-
-    profile_path = os.path.join(base_dirs['PROFILES_DIR'],
-                                os.environ.get('MS_PROFILE'))
-    if not os.path.exists(profile_path):
-        raise Exception('We can not go ahead without a profile')
-
-    port = int(os.environ.get('MS_PORT'))
+    debug = eval('logging.' + env_property('MS_DEBUG'))
 
     queue = multiprocessing.Queue(-1)
     listener = multiprocessing.Process(target=listener_process,
@@ -86,6 +68,21 @@ if __name__ == "__main__":
     listener.start()
 
     try:
+        resources_dir = os.path.join(env_property("MS_BASE_DIR"), 'resources')
+
+        if not os.path.isdir(resources_dir):
+            raise Exception('We can not go ahead without a resource directory')
+
+        profiles_dir = os.path.join(resources_dir, 'profiles')
+        if not os.path.isdir(profiles_dir):
+            raise Exception('We can not go ahead without a profile directory')
+
+        profile_path = os.path.join(profiles_dir, env_property('MS_PROFILE'))
+        if not os.path.exists(profile_path):
+            raise Exception('We can not go ahead without a profile')
+
+        port = env_property('MS_PORT', int)
+
         server = BbGumServer(queue, profile_path, port)
         server.start(debug)
     except KeyboardInterrupt:
