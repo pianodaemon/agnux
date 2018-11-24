@@ -10,37 +10,28 @@ import sys
 from bbgum.server import BbGumServer
 
 
-def listener_configurer(log_path, debug):
+def listener_configurer(debug):
     # if no name is specified, return a logger
     # which is the root logger of the hierarchy.
     root = logging.getLogger()
 
-    # create file handler which logs even debug messages
-    fh = TimedRotatingFileHandler(log_path, when="d",
-                                  interval=1, backupCount=7)
-    fh.setLevel(debug)
-
     # create console handler with a higher log level
     ch = logging.StreamHandler()
-    ch.setLevel(logging.WARNING)
+    ch.setLevel(debug)
 
     # create formats and add them to the handlers
-    fh_formatter = logging.Formatter(
-        '%(asctime)s %(processName)-10s %(name)s %(levelname)-8s %(message)s')
     ch_formatter = logging.Formatter(
-        '%(processName)-10s %(name)s %(levelname)-8s - %(filename)s - Line: %(lineno)d - %(message)s')
-    fh.setFormatter(fh_formatter)
+        '%(asctime)s %(processName)-10s %(name)s %(levelname)-8s %(message)s')
     ch.setFormatter(ch_formatter)
 
     # add the handlers to root
     root.addHandler(ch)
-    root.addHandler(fh)
 
 
-def listener_process(queue, configurer, log_path, debug=False):
+def listener_process(queue, configurer, debug=False):
     '''process that receives log traces from connection process'''
 
-    configurer(log_path, debug)
+    configurer(debug)
     while True:
         try:
             record = queue.get()
@@ -74,21 +65,13 @@ def fetch_base_dirs():
     if not os.path.isdir(d['PROFILES_DIR']):
         raise Exception('We can not go ahead without a profile directory')
 
-    d['LOGS_DIR'] = os.path.join(d['RESOURCES_DIR'], 'logs')
-    if not os.path.isdir(d['RESOURCES_DIR']):
-        raise Exception('We can not go ahead without a logs directory')
-
     return d
 
 
 if __name__ == "__main__":
 
-    LOG_NAME = 'fiscal.log'
-
     debug = eval('logging.' + os.environ.get('MS_DEBUG'))
     base_dirs = fetch_base_dirs()
-
-    log_path = os.path.join(base_dirs['LOGS_DIR'], LOG_NAME)
 
     profile_path = os.path.join(base_dirs['PROFILES_DIR'],
                                 os.environ.get('MS_PROFILE'))
@@ -99,7 +82,7 @@ if __name__ == "__main__":
 
     queue = multiprocessing.Queue(-1)
     listener = multiprocessing.Process(target=listener_process,
-                                       args=(queue, listener_configurer, log_path, debug))
+                                       args=(queue, listener_configurer, debug))
     listener.start()
 
     try:
