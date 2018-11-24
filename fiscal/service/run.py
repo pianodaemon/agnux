@@ -7,6 +7,7 @@ import argparse
 import logging
 import sys
 from bbgum.server import BbGumServer
+from custom.profile import env_property
 
 
 def listener_configurer(debug):
