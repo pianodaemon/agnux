@@ -51,13 +51,6 @@ def listener_process(queue, configurer, debug=False):
                 traceback.print_exc(file=sys.stderr)
 
 
-def fetch_base_dirs():
-    '''Conforms base directories for microservice'''
-
-
-    return d
-
-
 if __name__ == "__main__":
 
     debug = eval('logging.' + env_property('MS_DEBUG'))
