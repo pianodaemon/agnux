@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 
-from logging.handlers import TimedRotatingFileHandler
 import multiprocessing
 import traceback
 import argparse
