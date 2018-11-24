@@ -11,7 +11,7 @@ def env_property(prop, caster=None):
         raise FatalError("Enviroment variable {} has not been set !!".format(prop))
 
     if caster is None:
-       return prop
+       return val
 
     try:
         return caster(val)
