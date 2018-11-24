@@ -1,14 +1,5 @@
 {
     "profile": {
-        "dbms": {
-            "pgsql_conn": {
-                "host" : "pgsqlhost",
-                "db" : "customer00",
-                "user" : "customer00",
-                "passwd" : "customer00",
-                "port" : "5432"
-            }           
-        },
         "tparty": {
             "pac": {
                 "name": "servisim",

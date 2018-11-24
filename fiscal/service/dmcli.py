@@ -82,9 +82,7 @@ def dmcli(args, logger):
             raise Exception("input variables bad conformed")
 
         try:
-            dpl = DocPipeLine(logger, RESOURCES_DIR,
-                rdirs_conf = pt.res.dirs,
-                pgsql_conf = pt.dbms.pgsql_conn)
+            dpl = DocPipeLine(logger, RESOURCES_DIR, rdirs_conf = pt.res.dirs)
             dpl.run(args.dm_builder, args.dm_output, **kwargs)
         except:
             raise Exception("problems in document pipeline")
