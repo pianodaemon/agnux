@@ -6,7 +6,7 @@ from misc.helperstr import UMT
 class FatalError(Exception):
     """ Fatal error exception class. """
 
-    def __init__(self, message=None):
+    def __init__(self, msg=None):
 
         highlight = ''
         normal    = ''
