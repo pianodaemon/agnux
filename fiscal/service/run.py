@@ -9,6 +9,7 @@ import logging
 import sys
 from bbgum.server import BbGumServer
 from custom.profile import env_property
+from logging.handlers import TimedRotatingFileHandler
 
 
 def listener_configurer(debug):
@@ -56,25 +57,28 @@ if __name__ == "__main__":
 
     debug = eval('logging.' + env_property('MS_DEBUG'))
 
+    resources_dir = os.path.join(env_property("MS_BASE_DIR"), 'resources')
+
+    if not os.path.isdir(resources_dir):
+        msg = 'We can not go ahead without a resource directory'
+        sys.exit(msg)
+
+    profiles_dir = os.path.join(resources_dir, 'profiles')
+    if not os.path.isdir(profiles_dir):
+        msg = 'We can not go ahead without a profile directory'
+        sys.exit(msg)
+
+    profile_path = os.path.join(profiles_dir, env_property('MS_PROFILE'))
+    if not os.path.exists(profile_path):
+        msg = 'We can not go ahead without a profile'
+        sys.exit(msg)
+
     queue = multiprocessing.Queue(-1)
     listener = multiprocessing.Process(target=listener_process,
                                        args=(queue, listener_configurer, debug))
     listener.start()
 
     try:
-        resources_dir = os.path.join(env_property("MS_BASE_DIR"), 'resources')
-
-        if not os.path.isdir(resources_dir):
-            raise Exception('We can not go ahead without a resource directory')
-
-        profiles_dir = os.path.join(resources_dir, 'profiles')
-        if not os.path.isdir(profiles_dir):
-            raise Exception('We can not go ahead without a profile directory')
-
-        profile_path = os.path.join(profiles_dir, env_property('MS_PROFILE'))
-        if not os.path.exists(profile_path):
-            raise Exception('We can not go ahead without a profile')
-
         port = env_property('MS_PORT', int)
 
         server = BbGumServer(queue, profile_path, port)
@@ -82,6 +86,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print('Exiting')
     except:
+        queue.put_nowait(None)
+        listener.join()
         if debug == logging.DEBUG:
             print('Whoops! Problem in server:', file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
