@@ -3,11 +3,7 @@ package com.agnux.kemikal.controllers;
 
 
 import com.agnux.cfd.v2.Base64Coder;
-import com.agnux.cfd.v2.BeanFacturador;
-import com.agnux.cfdi.BeanFacturadorCfdi;
 import com.agnux.cfdi.LegacyRequest;
-import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
-import com.agnux.common.helpers.FileHelper;
 import com.agnux.common.helpers.StringHelper;
 import com.agnux.common.helpers.TimeHelper;
 import com.agnux.common.obj.DataPost;
@@ -20,12 +16,7 @@ import com.agnux.kemikal.interfacedaos.PrefacturasInterfaceDao;
 import com.agnux.tcp.BbgumProxy;
 import com.agnux.tcp.BbgumProxyError;
 import com.maxima.bbgum.ServerReply;
-import com.agnux.kemikal.reportes.pdfCfd_CfdiTimbradoFormato2;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -40,14 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- *
- * @author pianodaemon
- */
+
+
 @Controller
 @SessionAttributes({"user"})
 @RequestMapping("/prefacturas/")
@@ -61,15 +49,7 @@ public class PrefacturasController {
     @Autowired
     @Qualifier("daoGral")
     private GralInterfaceDao gralDao;
-    @Autowired
-    @Qualifier("beanFacturador")
-    BeanFacturador bfcfd;
-    @Autowired
-    @Qualifier("beanFacturadorCfdi")
-    BeanFacturadorCfdi bfcfdi;
-    @Autowired
-    @Qualifier("beanFacturadorCfdiTf")
-    BeanFacturadorCfdiTimbre bfCfdiTf;
+
     @Autowired
     @Qualifier("daoFacturas")
     private FacturasInterfaceDao facdao;
@@ -91,18 +71,6 @@ public class PrefacturasController {
 
     public FacturasInterfaceDao getFacdao() {
         return facdao;
-    }
-
-    public BeanFacturador getBfCfd() {
-        return bfcfd;
-    }
-
-    public BeanFacturadorCfdi getBfCfdi() {
-        return bfcfdi;
-    }
-
-    public BeanFacturadorCfdiTimbre getBfCfdiTf() {
-        return bfCfdiTf;
     }
 
     @RequestMapping(value = "/startup.agnux")
@@ -232,7 +200,6 @@ public class PrefacturasController {
         HashMap<String, Object> extra = new HashMap<String, Object>();
         ArrayList<HashMap<String, Object>> parametros = new ArrayList<HashMap<String, Object>>();
         HashMap<String, String> userDat = new HashMap<String, String>();
-        //ArrayList<HashMap<String, Object>> TMov = new ArrayList<HashMap<String, Object>>();
 
         //Decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
@@ -410,7 +377,6 @@ public class PrefacturasController {
         ArrayList<HashMap<String, Object>> datos_remision = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> detalles_remision = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> parametros = new ArrayList<HashMap<String, Object>>();
-        //ArrayList<HashMap<String, Object>> pres_x_prod = new ArrayList<HashMap<String, Object>>();
         ArrayList<HashMap<String, Object>> arrayExtras = new ArrayList<HashMap<String, Object>>();
         HashMap<String, Object> extra = new HashMap<String, Object>();
         HashMap<String, String> userDat = new HashMap<String, String>();
@@ -428,7 +394,6 @@ public class PrefacturasController {
         }
 
         detalles_remision = this.getPdao().getDetallesRemision(id_remision, permitir_descuento);
-        //pres_x_prod = this.getPdao().getPresPorProdRemision(id_remision);
 
         parametros = this.getPdao().getFac_Parametros(id_sucursal);
 
@@ -466,7 +431,6 @@ public class PrefacturasController {
 
         //decodificar id de usuario
         Integer id_usuario = Integer.parseInt(Base64Coder.decodeString(id_user));
-        //System.out.println("id_usuario: "+id_usuario);
 
         userDat = this.getHomeDao().getUserById(id_usuario);
         Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
@@ -654,7 +618,9 @@ public class PrefacturasController {
                     req.args(kwargs);
 
                     try {
-                        ServerReply reply = bbgumProxy.uploadBuff("localhost", 10080, req.getJson().getBytes());
+                        String[] address = this.getGralDao().getMicroserviceFiscalHost();
+
+                        ServerReply reply = bbgumProxy.uploadBuff(address[0], new Integer(address[1]), req.getJson().getBytes());
                         String msg = "core reply code: " + reply.getReplyCode();
                         if (reply.getReplyCode() == 0) {
                             Logger.getLogger(PrefacturasController.class.getName()).log(

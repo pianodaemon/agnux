@@ -1,8 +1,6 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.agnux.kemikal.controllers;
+
+
 import com.agnux.cfd.v2.Base64Coder;
 import com.agnux.cfdi.BeanFromCfdiXml;
 import com.agnux.cfdi.timbre.BeanFacturadorCfdiTimbre;
@@ -44,13 +42,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-/**
- *
- * @author Noe Martinez
- * gpmarsan@gmail.com
- * 17/febrero/2014
- * 
- */
+
+
 @Controller
 @SessionAttributes({"user"})
 @RequestMapping("/facnomina/")
@@ -514,11 +507,6 @@ public class FacNominaController {
         }
         
         
-        
-        
-        
-        //System.out.println(TimeHelper.getFechaActualYMDH()+"::Termina Actualizacion de la Prefactura:: "+actualizo);
-        
         if(actualizo.equals("1")){
             if ( generar.toLowerCase().trim().equals("true") ){
                 
@@ -659,16 +647,9 @@ public class FacNominaController {
         jsonretorno.put("msj",msjRespuesta);
         
         System.out.println("Validacion: "+ String.valueOf(jsonretorno.get("success")) + " | codeRespuesta: "+String.valueOf(codeRespuesta) + " | "+"valorRespuesta: "+String.valueOf(valorRespuesta)+ " | "+"msjRespuesta: "+String.valueOf(msjRespuesta));
-        //System.out.println("Actualizo: "+String.valueOf(jsonretorno.get("actualizo")));
-        
-        //System.out.println(TimeHelper.getFechaActualYMDH()+": FIN------------------------------------");
         
         return jsonretorno;
-    }
-    
-    
-    
-    
+    }  
     
     
     //obtiene los tipos de cancelacion
@@ -766,12 +747,6 @@ public class FacNominaController {
         return null;
     }
     
-    
-    
-    
-    
-    
-    
     //Edicion y nuevo de Nomina de Empleado
     @RequestMapping(method = RequestMethod.POST, value="/edit_nomina_empleado.json")
     public @ResponseBody HashMap<String, String> editNominaEmpleadoJson(
@@ -855,8 +830,6 @@ public class FacNominaController {
         userDat = this.getHomeDao().getUserById(id_usuario);
         Integer id_empresa = Integer.parseInt(userDat.get("empresa_id"));
         Integer id_sucursal = Integer.parseInt(userDat.get("sucursal_id"));
-        
-        
         
         
         if(Integer.parseInt(id_reg)>0){
@@ -959,11 +932,6 @@ public class FacNominaController {
     }
     
     
-    
-    
-    
-    
-    
     //Cancelacion de CFDi de Nomina
     @RequestMapping(method = RequestMethod.POST, value="/getCancelaNomina.json")
     public @ResponseBody HashMap<String, String> getCancelaNominaJson(
@@ -1044,29 +1012,6 @@ public class FacNominaController {
 
                         String str_execute="";
 
-                        //Cancelacion con DIVERZA
-                        if(String.valueOf(noPac).equals("1")){
-                            String ruta_fichero_llave_pfx = this.getGralDao().getSslDir() + rfcEmpresaEmisora+ "/" +this.getGralDao().getFicheroPfxTimbradoCfdi(id_empresa,id_sucursal) ;
-                            String password_pfx = this.getGralDao().getPasswdFicheroPfxTimbradoCfdi(id_empresa, id_sucursal);
-                            String ruta_java_almacen_certificados = this.getGralDao().getJavaRutaCacerts(id_empresa, id_sucursal);
-                            /*
-                            //Datos para cancelacion
-                            args[0] = PAC proveedor
-                            args[1] = tipo de ambiente(pruebas, produccion)
-                            args[2] = tipo_peticion
-                            args[3] = FicheroPfxTimbradoCfdi
-                            args[4] = PasswdFicheroPfxTimbradoCfdi
-                            args[5] = JavaVmDir
-                            args[6] = getRfc_emisor
-                            args[7] = getRfc_receptor
-                            args[8] = uuid
-                            args[9] = DirCancelados
-                            args[10] = serie_folio
-                             */
-
-                            //str_execute = ruta_ejecutable_java+" -jar "+ruta_jarWebService+" "+noPac+" "+ambienteFac+" "+tipo_peticion+" "+ruta_fichero_llave_pfx+" "+password_pfx+" "+ruta_java_almacen_certificados+" "+emisor_rfc+" "+receptor_rfc+" "+uuid+" "+rutaCanceladosDir+" "+serie_folio;
-                        }
-
                         //Cancelacion con SERVISIM
                         if(String.valueOf(noPac).equals("2")){
 
@@ -1119,9 +1064,7 @@ public class FacNominaController {
                         if(String.valueOf(valorRespuesta).equals("true")){
                             succcess = this.getFacdao().selectFunctionForFacAdmProcesos(data_string, extra_data_array);
                             if(String.valueOf(succcess).equals("true")){
-                                HashMap<String, String> data = new HashMap<String, String>();
-                                //serie_folio = succcess.split(":")[0];
-                                //System.out.println("serie_folio:"+serie_folio + "    Cancelado:"+succcess.split(":")[1]);
+                                HashMap<String, String> data = new HashMap<String, String>();                               
                             }
                         }
 
@@ -1160,9 +1103,6 @@ public class FacNominaController {
         
         return jsonretorno;
     }
-    
-    
-    
     
   @RequestMapping(value = "/getPDF/{id_reg}/{id_empleado}/{iu}/out.json", method = RequestMethod.GET ) 
     public ModelAndView getGeneraPdfFacturacionJson(
@@ -1234,16 +1174,11 @@ public class FacNominaController {
         
         
         System.out.println("::::::::::::Generando PDF de Nomina:::::::::::::::::..");
-        
-        //String razon_social_empresa = this.getGralDao().getRazonSocialEmpresaEmisora(id_empresa);
-        //String rfc_empresa = this.getGralDao().getRfcEmpresaEmisora(id_empresa);
-        
+                
         //obtener el directorio temporal
         String dir_tmp = this.getGralDao().getTmpDir();
-        //String ruta_imagen = this.getGralDao().getImagesDir()+rfc_empresa+"_logo.png";
         
         File file_dir_tmp = new File(dir_tmp);
-        //System.out.println("Directorio temporal: "+file_dir_tmp.getCanonicalPath());
         
         //genera nombre del archivo
         String file_name = data.get("serie_folio") +".pdf";
@@ -1269,14 +1204,9 @@ public class FacNominaController {
         FileHelper.delete(fileout);
         
         return null;
-    } 
+    }
 
-    
     private String getCadenaOriginalTimbre(String comprobante, Integer id_empresa, Integer id_sucursal) throws Exception {
-        String valor_retorno = new String();
-        //System.out.println("EsquemaXslt: "+this.getGralDao().getXslDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa)+"/"+ this.getGralDao().getFicheroXslTimbre(id_empresa, id_sucursal));
-        valor_retorno = XmlHelper.transformar(comprobante, this.getGralDao().getXslDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa)+"/"+ this.getGralDao().getFicheroXslTimbre(id_empresa, id_sucursal));
-        
-        return valor_retorno;
+        return XmlHelper.transformar(comprobante, this.getGralDao().getXslDir() + this.getGralDao().getRfcEmpresaEmisora(id_empresa)+"/"+ this.getGralDao().getFicheroXslTimbre(id_empresa, id_sucursal));
     }
 }

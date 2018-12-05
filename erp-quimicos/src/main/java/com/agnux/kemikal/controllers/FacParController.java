@@ -236,7 +236,4 @@ public class FacParController {
             log.log(Level.INFO, "Salida json {0}", String.valueOf(jsonretorno.get("success")));
         return jsonretorno;
     }
-    
-    
-    
 }
