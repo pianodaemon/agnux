@@ -1,14 +1,5 @@
 {
-    "engine_profile": {
-        "dbms": {
-            "pgsql_conn": {
-                "host" : "localhost",
-                "db" : "instance01",
-                "user" : "instance01",
-                "passwd" : "instance01",
-                "port" : " 5432"
-            }           
-        },
+    "profile": {
         "tparty": {
             "pac": {
                 "name": "servisim",
@@ -42,22 +33,6 @@
                     }
                 ]
             }
-        },
-        "bbgum": {
-            "controllers": [
-                 {
-                     "archetype": "0x30",
-                     "event_mod": "srhello"
-                 },
-                 {
-                     "archetype": "0x24",
-                     "event_mod": "srpostbuff"
-                 },
-                 {
-                     "archetype": "0x28",
-                     "event_mod": "rwrbufftrans"
-                 }
-            ]
         },
         "res":{
             "dirs":[

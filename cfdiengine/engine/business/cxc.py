@@ -11,7 +11,7 @@ from docmaker.pipeline import DocPipeLine
 from misc.helperstr import HelperStr
 
 
-def __get_emisor_rfc(logger, usr_id, pgsql_conf):
+def __get_emisor_rfc(logger, usr_id):
 
     q = """select upper(EMP.rfc) as rfc
         FROM gral_suc AS SUC
@@ -21,16 +21,14 @@ def __get_emisor_rfc(logger, usr_id, pgsql_conf):
         WHERE USR_SUC.gral_usr_id = {}""".format(usr_id)
 
     logger.debug("Performing query: {}".format(q))
-    for row in HelperPg.onfly_query(pgsql_conf, q, True):
+    for row in HelperPg.onfly_query(q, True):
         # Just taking first row of query result
         return row['rfc']
 
 
 def __run_builder(logger, pt, f_outdoc, resdir, dm_builder, **kwargs):
     try:
-        dpl = DocPipeLine(logger, resdir,
-            rdirs_conf=pt.res.dirs,
-            pgsql_conf=pt.dbms.pgsql_conn)
+        dpl = DocPipeLine(logger, resdir, rdirs_conf=pt.res.dirs)
         dpl.run(dm_builder, f_outdoc, **kwargs)
         return ErrorCode.SUCCESS
     except:
@@ -38,12 +36,12 @@ def __run_builder(logger, pt, f_outdoc, resdir, dm_builder, **kwargs):
         return ErrorCode.DOCMAKER_ERROR
 
 
-def __run_sp_ra(logger, q, pgsql_conf, tmode = True):
+def __run_sp_ra(logger, q, tmode = True):
     """Runs a store procedure with rich answer"""
 
     def run_store():
         logger.debug("Performing query: {}".format(q))
-        r = HelperPg.onfly_query(pgsql_conf, q, True)
+        r = HelperPg.onfly_query(q, True)
 
         # For this case we are just expecting one row
         if len(r) != 1:
@@ -142,7 +140,7 @@ def dopago(logger, pt, req):
         q = """UPDATE erp_pagos set aux_no_fac = '{}'
             WHERE erp_pagos.numero_transaccion = {}""".format(filename.replace('.xml', ''), pag_id)
         try:
-            HelperPg.onfly_update(pt.dbms.pgsql_conn, q)
+            HelperPg.onfly_update(q)
         except:
             logger.error(dump_exception())
             return ErrorCode.DBMS_SQL_ISSUES
@@ -160,7 +158,7 @@ def dopago(logger, pt, req):
             AND fac_cfds_conf_folios.fac_cfds_conf_id=fac_cfds_conf.id
             AND USR_SUC.gral_usr_id = {}""".format(usr_id)
         try:
-            HelperPg.onfly_update(pt.dbms.pgsql_conn, q)
+            HelperPg.onfly_update(q)
         except:
             logger.error(dump_exception())
             return ErrorCode.DBMS_SQL_ISSUES
@@ -175,8 +173,7 @@ def dopago(logger, pt, req):
         _rfc = None
 
         try:
-            _rfc = __get_emisor_rfc(logger, req.get('usr_id', None),
-                    pt.dbms.pgsql_conn)
+            _rfc = __get_emisor_rfc(logger, req.get('usr_id', None))
         except:
             rc = ErrorCode.DBMS_SQL_ISSUES
 
@@ -237,7 +234,7 @@ def undofacturar(logger, pt, req):
             FROM fac_docs
             WHERE fac_docs.id="""
 
-        for row in HelperPg.onfly_query(pt.dbms.pgsql_conn, "{0}{1}".format(q, fact_id), True):
+        for row in HelperPg.onfly_query("{0}{1}".format(q, fact_id), True):
             # Just taking first row of query result
             return row['filename'] + '.xml'
 
@@ -250,7 +247,7 @@ def undofacturar(logger, pt, req):
     _rfc = None
 
     try:
-        _rfc = __get_emisor_rfc(logger, usr_id, pt.dbms.pgsql_conn)
+        _rfc = __get_emisor_rfc(logger, usr_id)
     except:
         return ErrorCode.DBMS_SQL_ISSUES.value
 
@@ -264,7 +261,7 @@ def undofacturar(logger, pt, req):
     except:
         return ErrorCode.RESOURCE_NOT_FOUND.value
 
-    rc = __run_sp_ra(logger, q_val, pt.dbms.pgsql_conn, tmode = False)
+    rc = __run_sp_ra(logger, q_val, tmode = False)
     if rc != ErrorCode.SUCCESS:
         return rc.value
 
@@ -272,7 +269,7 @@ def undofacturar(logger, pt, req):
     if rc != ErrorCode.SUCCESS:
         return rc.value
 
-    rc = __run_sp_ra(logger, q_do, pt.dbms.pgsql_conn)
+    rc = __run_sp_ra(logger, q_do)
     return rc.value
 
 
@@ -287,7 +284,7 @@ def facturar(logger, pt, req):
         q = "{0}{1}".format(sql, usr_id)
         logger.debug("Performing query: {}".format(q))
         try:
-            for row in HelperPg.onfly_query(pt.dbms.pgsql_conn, q):
+            for row in HelperPg.onfly_query(q):
                 return ErrorCode.SUCCESS, dict(rfc=row['rfc'], no_id=row['no_id'])
         except:
             logger.error(dump_exception())
@@ -335,7 +332,7 @@ def facturar(logger, pt, req):
         logger.debug("Performing query: {}".format(q))
         try:
             s_out = None
-            for row in HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True):
+            for row in HelperPg.onfly_query(q, True):
                 # Just taking first row of query result
                 s_out = row['fac_save_xml']
                 break
@@ -409,7 +406,7 @@ def donota(logger, pt, req):
         )
         logger.debug("Performing query: {}".format(q))
         try:
-            res = HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True)
+            res = HelperPg.onfly_query(q, True)
             if len(res) != 1:
                 raise Exception('unexpected result regarding execution of store')
 
@@ -444,8 +441,7 @@ def donota(logger, pt, req):
         _rfc = None
 
         try:
-            _rfc = __get_emisor_rfc(logger, req.get('usr_id', None),
-                    pt.dbms.pgsql_conn)
+            _rfc = __get_emisor_rfc(logger, req.get('usr_id', None))
         except:
             rc = ErrorCode.DBMS_SQL_ISSUES
 
@@ -484,7 +480,7 @@ def undonota(logger, pt, req):
             FROM fac_nota_credito
             WHERE fac_nota_credito.id = {}""".format(ncr_id)
 
-        for row in HelperPg.onfly_query(pt.dbms.pgsql_conn, q, True):
+        for row in HelperPg.onfly_query(q, True):
             # Just taking first row of query result
             return row['filename'] + '.xml'
 
@@ -496,7 +492,7 @@ def undonota(logger, pt, req):
     _rfc = None
 
     try:
-        _rfc = __get_emisor_rfc(logger, usr_id, pt.dbms.pgsql_conn)
+        _rfc = __get_emisor_rfc(logger, usr_id)
     except:
         return ErrorCode.DBMS_SQL_ISSUES.value
 
@@ -527,5 +523,5 @@ def undonota(logger, pt, req):
         mode          #  _mode
     )
 
-    rc = __run_sp_ra(logger, q_do, pt.dbms.pgsql_conn)
+    rc = __run_sp_ra(logger, q_do)
     return rc.value
