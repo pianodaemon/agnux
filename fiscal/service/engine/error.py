@@ -12,7 +12,7 @@ class FatalError(Exception):
         normal    = ''
 
         if sys.stderr.isatty():
-            highlight = UMT.RED + FMT.BOLD
+            highlight = UMT.RED + UMT.BOLD
             normal    = UMT.NORMAL
 
         self.message = '%sFATAL%s: %s\n' % (highlight, normal, msg)
